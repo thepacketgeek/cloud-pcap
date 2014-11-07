@@ -1,10 +1,15 @@
-
+/*########  Change Bootstrap Defaults ########*/
 body {
 	background: #4b80bb;
 }
 
 body > .container {
 	margin-bottom: 40px;
+}
+
+div.content {
+	padding-top: 60px;
+	padding-bottom: 30px;
 }
 
 .navbar {
@@ -20,8 +25,28 @@ body > .container {
 	padding-right: 20px;
 }
 
+.modal-dialog {
+    margin-top: 100px;
+}
+/*
+.panel, .panel-heading, .panel-body, .dropzone {
+	border-radius: 0;
+}*/
+
+* {
+	border-radius: 0 !important;
+}
+
+/*########  Tag/Typeahead Layout ########*/
+
 .bootstrap-tagsinput {
 	width: 100%;
+	margin-top: -6px;
+	overflow: hidden;
+}
+
+.form-group .control-label {
+	display: none;
 }
 
 .bootstrap-tagsinput .label-info {
@@ -29,15 +54,14 @@ body > .container {
 	font-size: 80%;
 }
 
+i.fa-tags {
+	padding-right: 5px;
+}
+
+/*########  Special Layouts ########*/
 
 .panel-heading .fa {
 	padding-top: 3px;
-}
-
-button a, button a:hover {
-	color: #fff;
-	text-decoration: none;
-
 }
 
 .chart-title {
@@ -45,27 +69,25 @@ button a, button a:hover {
 	font-family: Lucida Grande, Lucida Sans Unicode, Verdana, Arial, Helvetica, sans-serif;
 }
 
-i.fa-tags {
-	padding-right: 5px;
-}
-
-div.content {
-	padding-top: 60px;
-	padding-bottom: 30px;
-}
-
-.modal-dialog {
-    margin-top: 100px;
-}
-
 .upload, form.dropzone {
 	height: 200px;
 	margin-bottom: 30px;
 }
 
-#packetStats i {
-	padding-right: 10px;
+.panel-heading .pull-right i {
+	padding-left: 15px;
 }
+
+.panel-heading small {
+	padding-top: 2px;
+}
+
+.packetTitle {
+	height: 40px;
+}
+
+/*########  Packet View  ########*/
+
 
 table#packetList {
 	font-size: 85%;

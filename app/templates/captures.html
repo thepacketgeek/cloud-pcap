@@ -24,28 +24,38 @@ Captures - {{ traceFile.name }}
 
 		<div class="row">
 			<div class="panel panel-default">
-				<div class="panel-heading">
-					<span class="filename">
-						<span>{{ traceFile.name }}</span>.{{ traceFile.filetype }}
-						<a id="editName"><i class="fa fa-pencil-square-o"></i></a>
-					</span>
-					<span class="editname hide">
-						<input class="form filename "/>.{{ traceFile.filetype }}
-						<a id="saveName"><i class="fa fa-floppy-o"></i></a>
-					</span>
+					<div class="panel-heading packetTitle">
+						<div class="col-md-3">
+							<span class="filename">
+								<span>{{ traceFile.name }}</span>.{{ traceFile.filetype }}
+								<a id="editName"><i class="fa fa-pencil-square-o"></i></a>
+							</span>
+							<span class="editname hide">
+								<input class="form filename "/>.{{ traceFile.filetype }}
+								<a id="saveName"><i class="fa fa-floppy-o"> </i></a>
+							</span>
+						</div>
 
+
+						<div class="col-md-3 text-center">
+							<small class=""> ({{ details['stats']['count'] }} packets, {{ ((traceFile.filesize|float) / 1024.0)|format_comma}} KBytes)</small>
+							<a href="#" id="packetStats"> 
+								<i class="fa fa-bar-chart fa-2x pull-right" style="margin-top: -3px;"></i> 
+							</a>
+							<a href="{{ url_for('download_file', file_id=traceFile.id, attachment_name='%s.%s' % (traceFile.name, traceFile.filetype)) }}">
+							<i class="fa fa-download pull-right fa-2x" style="margin-top: -3px;"></i>
+							</a>
+						</div>
+
+						<div class="col-md-5 pull-right">
+					        {{ wtf.form_field(form.tags, class="", **{'data-role':'tagsinput', 'data-provide':'typeahead'}) }}
+				     	</div>
+					</div>
 					
-					<a class = "pull-right" href="{{ url_for('download_file', file_id=traceFile.id, attachment_name='%s.%s' % (traceFile.name, traceFile.filetype)) }}">
-						<i class="fa fa-download fa-2x" style="margin-top: -3px;"></i>
-					</a>
-					<a class="pull-right" href="#" id="packetStats"> 
-						<i class="fa fa-bar-chart fa-2x" style="margin-top: -3px;"></i> 
-					</a>
 
-				</div>
 				
 				{% if details %}
-				<div class="panel-body packetStats">
+				<div class="panel-body packetStats hide">
 					<div class="row">
 						<div class="col-md-4">
 							{% column_chart details['stats']['breakdown'] with library=library.col_library %}
@@ -66,9 +76,6 @@ Captures - {{ traceFile.name }}
 								  <dd>{{ details['stats']['avg_length'] }} Bytes</dd>
 								</dl>
 							</div>
-								<form class="form" id="tagsform" method="post" role="form">
-							        {{ wtf.form_field(form.tags, class="form-alert", **{'data-role':'tagsinput', 'data-provide':'typeahead'}) }}
-							     </form>
 						</div>
 
 					</div>

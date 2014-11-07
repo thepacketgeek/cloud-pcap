@@ -1,0 +1,18 @@
+{% extends "layout.html" %}
+
+{% block title %}
+{{super()}}
+Index
+{% endblock %}
+
+{% block content %}
+{{ super() }}
+<div class="container content">
+<div class="col-md-10 col-md-offset-1">
+	<div class="page-header"> 
+		<h1>500 Error: {{ e }}</h1>
+		<p>Check the <a href="{{ url_for('logs', level="error") }}">logs</a> for more info.</p>
+	</div>
+</div>
+</div>
+{% endblock %}

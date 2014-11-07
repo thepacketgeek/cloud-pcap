@@ -1,0 +1,76 @@
+
+body {
+	background: #4b80bb;
+}
+
+body > .container {
+	margin-bottom: 40px;
+}
+
+.navbar {
+	border-radius: 0px;
+}
+
+.text-error {
+	color: #a94442;
+}
+
+.form-alert {
+	float: right;
+	padding-right: 20px;
+}
+
+.bootstrap-tagsinput {
+	width: 100%;
+}
+
+.bootstrap-tagsinput .label-info {
+	background-color:#2f7fd7;
+	font-size: 80%;
+}
+
+
+.panel-heading .fa {
+	padding-top: 3px;
+}
+
+button a, button a:hover {
+	color: #fff;
+	text-decoration: none;
+
+}
+
+.chart-title {
+	font-size: 18px; 
+	font-family: Lucida Grande, Lucida Sans Unicode, Verdana, Arial, Helvetica, sans-serif;
+}
+
+i.fa-tags {
+	padding-right: 5px;
+}
+
+div.content {
+	padding-top: 60px;
+	padding-bottom: 30px;
+}
+
+.modal-dialog {
+    margin-top: 100px;
+}
+
+.upload, form.dropzone {
+	height: 200px;
+	margin-bottom: 30px;
+}
+
+#packetStats i {
+	padding-right: 10px;
+}
+
+table#packetList {
+	font-size: 85%;
+}
+
+.tracefiles {
+	min-height: 350px;
+}

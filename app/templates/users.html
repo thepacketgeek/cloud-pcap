@@ -1,0 +1,191 @@
+{% extends "layout.html" %}
+{% import "bootstrap/wtf.html" as wtf %} 
+
+{% block title %}
+{{super()}}
+Users
+{% endblock %}
+
+{% block content %}
+{{super()}}
+         
+
+<div class="container content">
+	
+	<div class="col-md-8 col-md-offset-2">
+		{% for category, message in get_flashed_messages(with_categories=true) %} 
+		<div class="alert alert-{{ category }}">
+			<button type="button" class="close" data-dismiss="alert">&times;</button>
+			{{ message }}
+		</div>
+		{% endfor %}
+		
+		{% if user %}
+			
+		
+
+			<h2>Edit User: {{ user.username }}
+			<button type="button" class="pull-right btn btn-danger btn-xs" data-toggle="modal" data-target="#deleteModal">Delete User</button>
+			</h2>
+			<br/>
+
+			<div class="row">
+			<div class="panel panel-default">
+				<div class="panel-body">
+					  <form class="form" method="post" role="form">
+					    {{ form.hidden_tag() }}
+					    {{ wtf.form_errors(form, hiddens="only") }}
+
+					    
+					    {{ wtf.form_field(form.role) }}
+
+					  
+					  {{ wtf.form_field(form.submit, button_map={'submit': 'primary'}) }}
+					  </form>
+				</div>	
+			</div>
+		</div>
+
+		
+
+			<!-- Delete Modal -->
+			<div class="modal fade" id="deleteModal">
+			  <div class="modal-dialog">
+			    <div class="modal-content">
+			      <div class="modal-header">
+			        <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+			        <h4 class="modal-title">Delete User</h4>
+			      </div>
+			      <div class="modal-body">
+			        <p>Are you sure you want to delete {{ user.username }}?</p>
+			      </div>
+			      <div class="modal-footer">
+			      	<button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+        			<button type="button" class="btn btn-danger"><a href="{{ url_for('delete_user', user_id=user.id) }}">Confirm Delete</a></button>
+			      </div>
+			    </div><!-- /.modal-content -->
+			  </div><!-- /.modal-dialog -->
+			</div><!-- /.modal -->
+
+		{% else %}
+			<h3>User List
+				{% if current_user.role == 'admin' %}
+					<button type="button" class="btn btn-default btn-xs pull-right" data-toggle="modal" data-target="#addUserModal">Add User</button>
+				{% endif %}
+			</h3>
+			<div class="panel panel-default">
+				<div class="panel-body">
+					<table id="user_table" class="table table-hover">
+						<thead>
+							<th>ID</th>
+							<th>Username</th>
+							<th>Email</th>
+							<th>Role</th>
+						</thead>
+						<tbody>
+						{% for user in users %}
+							<tr>
+								<td>{{ user.id }}</td>
+								<td><a href="{{ url_for('user', user_id=user.id) }}">{{ user.username }}</a></td>
+
+								<td>{{ user.email }}</td>
+								<td>{{ user.role|title }}</td>
+
+
+							</tr>
+						{% endfor %}
+						</tbody>
+					</table>
+				</div>
+			</div>
+			<br/>
+			
+
+			<!-- Add User Modal -->
+			<div class="modal fade" id="addUserModal">
+			  <div class="modal-dialog">
+			    <div class="modal-content">
+			      <div class="modal-header">
+			        <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+			        <h4 class="modal-title">Add User</h4>
+			      </div>
+			      <div class="modal-body">
+			        <form class="form" method="post" role="form">
+			          {{ form.hidden_tag() }}
+			          {{ wtf.form_errors(form, hiddens="only") }}
+
+			          {{ wtf.form_field(form.username) }}
+			          {{ wtf.form_field(form.password) }}
+			          {{ wtf.form_field(form.role) }}
+			      </div>
+			      <div class="modal-footer">
+			        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+			        {{ wtf.form_field(form.submit, button_map={'submit': 'primary'}) }}
+			      </div>
+			        </form>
+			    </div><!-- /.modal-content -->
+			  </div><!-- /.modal-dialog -->
+			</div><!-- /.modal -->
+			
+
+
+
+		{% endif %}
+
+	</div>
+
+</div>
+
+{% endblock %}
+
+{% block scripts %}
+{{ super() }}
+
+{% if not user %}
+	<script src="{{url_for('.static', filename='jquery.tablesorter.min.js')}}"></script>
+{% endif %}
+	
+<script>
+
+var formErrors = {% if form.errors %}true{% else %}false{% endif %};
+
+var edit = {% if user %}true{% else %}false{% endif %};
+
+
+$(document).ready(function() {
+
+    if (formErrors) {
+        if (edit) {
+        	var editModal = $('#editModal')
+        	editModal.removeClass('fade');
+        	editModal.modal('show');
+        } else {
+        	var addModal = $('#addModal')
+        	addModal.removeClass('fade');
+        	addModal.modal('show');
+        }
+    }
+
+    {% if not user %}
+   	
+	   	$('#addUserModal').on('shown.bs.modal', function (e) {
+	   		$('input#api_master').focus();
+	   	});
+		
+		$('#user_table').tablesorter({ sortList: [[0,0]]});
+	   	
+
+	{% else %}
+			
+	   	$('#editModal').on('shown.bs.modal', function (e) {
+	   		$('input#group').focus();
+	   	});
+
+
+	{% endif %}
+	 
+});
+
+
+</script>
+{% endblock %}

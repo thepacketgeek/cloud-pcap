@@ -1,0 +1,65 @@
+{% extends "layout.html" %}
+
+{% block title %}
+{{super()}}
+Logs
+{% endblock %}
+
+{% block content %}
+{{ super() }}
+
+{% if not limit %}
+{% set limit = 50 %}
+{% endif %}
+
+<div class="container content">
+<div class="col-md-10 col-md-offset-1">
+	<div class="page-header"> 
+		
+		<div class="row">
+			{% for category, message in get_flashed_messages(with_categories=true) %} 
+			<div class="alert alert-{{ category }}">
+				<button type="button" class="close" data-dismiss="alert">&times;</button>
+				{{ message }}
+			</div>
+			{% endfor %}
+			<div class="panel panel-default">
+				<div class="panel-body">
+					<div class="btn-group btn-group-justified" id="level">
+					  <a href="{{ url_for('logs', limit=limit) }} "type="button" id="all" class="btn btn-default btn-primary active">All</a>
+					  <a href="{{ url_for('logs', level="info", limit=limit) }} "type="button" id="info" class="btn btn-default">Info</a>
+					  <a href="{{ url_for('logs', level="warning", limit=limit) }} "type="button" id="warning" class="btn btn-default">Warning</a>
+					  <a href="{{ url_for('logs', level="error", limit=limit) }} "type="button" id="error" class="btn btn-default">Error</a>
+					</div>
+					</br>
+					{% if logs|length == 0 %}
+					<h3>No Logs found</h3>
+					{% endif %}
+					{% for log in logs %}
+					<p class='text-{{log.level|lower}}'><b>{{log.timestamp}}</b> - {{log.level}} - {{log.description}}</p>
+					{% endfor %}
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+{{ super() }}
+
+<script type="text/javascript">
+	$(document).ready(function(){
+		{% if level %}
+		
+			$('#all').removeClass('btn-primary active');
+			$('a#{{ level }}').addClass('btn-primary active');
+
+		{% endif %}
+
+	});
+</script>
+
+
+{% endblock %}

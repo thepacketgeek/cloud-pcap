@@ -1,0 +1,27 @@
+{% set pie_library = { 
+	
+	"tooltip": { 
+		"pointFormat": '{series.name}: <b>{point.y}</b>'
+            }, 
+        "plotOptions": {"pie": {
+        	"borderWidth": 0,
+	        "dataLabels": { "enabled": false },
+	        "showInLegend": true,
+            }
+    	},
+		"title": { "text": "Packet Sizes" },
+
+
+} %}
+
+{% set col_library = { 
+	"yAxis": [{ 
+		"id": 0, 
+		"min": 0, 
+		"opposite": false, 
+		"title": {
+                "text": "Packets" }
+        }
+    ],
+    "title": { "text": "Protocols" }
+} %}

@@ -1,0 +1,223 @@
+{% extends "layout.html" %} 
+{% import "bootstrap/wtf.html" as wtf %} 
+{% import "library.html" as library %}
+
+{% block title %}
+{{ super()}}
+Capture - {{ traceFile.name }}
+{% endblock %} 
+
+{% block content %}
+{{ super() }}
+
+
+<div class="container-fluid content">
+	
+	<div class="col-md-12">
+		{% for category, message in get_flashed_messages(with_categories=true) %} 
+		<div class="alert alert-{{ category }}">
+			<button type="button" class="close" data-dismiss="alert">&times;</button>
+			{{ message }}
+		</div>
+		{% endfor %}
+		<br/>
+
+		<div class="row">
+			<div class="panel panel-default">
+				<div class="panel-heading">
+					<span class="filename">
+						<span>{{ traceFile.name }}</span>.{{ traceFile.filetype }}
+						<a id="editName"><i class="fa fa-pencil-square-o"></i></a>
+					</span>
+					<span class="editname hide">
+						<input class="form filename "/>.{{ traceFile.filetype }}
+						<a id="saveName"><i class="fa fa-floppy-o"></i></a>
+					</span>
+
+					
+					<a class = "pull-right" href="{{ url_for('download_file', file_id=traceFile.id, attachment_name='%s.%s' % (traceFile.name, traceFile.filetype)) }}">
+						<i class="fa fa-download fa-2x" style="margin-top: -3px;"></i>
+					</a>
+					<a class="pull-right" href="#" id="packetStats"> 
+						<i class="fa fa-bar-chart fa-2x" style="margin-top: -3px;"></i> 
+					</a>
+
+				</div>
+				
+				{% if details %}
+				<div class="panel-body packetStats">
+					<div class="row">
+						<div class="col-md-4">
+							{% column_chart details['stats']['breakdown'] with library=library.col_library %}
+						</div>
+						<div class="col-md-4">
+							{% pie_chart details['stats']['length_buckets'] with library=library.pie_library %}
+						</div>
+						<div class="col-md-4">
+							<h4 class="chart-title text-center">Capture File Stats</h4>
+							</br>
+							<div style="min-height: 150px;">
+								<dl class="dl-horizontal">
+								  <dt>Packet Count</dt>
+								  <dd>{{ details['stats']['count'] }}</dd>
+								  <dt>File Size</dt>
+								  <dd>{{ traceFile.filesize|format_comma }} Bytes</dd>
+								  <dt>Average Packet Length</dt>
+								  <dd>{{ details['stats']['avg_length'] }} Bytes</dd>
+								</dl>
+							</div>
+								<form class="form" id="tagsform" method="post" role="form">
+							        {{ wtf.form_field(form.tags, class="form-alert", **{'data-role':'tagsinput', 'data-provide':'typeahead'}) }}
+							     </form>
+						</div>
+
+					</div>
+				</div>
+				{% endif %}
+			</div>
+		</div>
+
+		{% if details %}
+		<div class="row">
+			<div class="panel panel-default">
+			  <div class="panel-heading">
+				  Packets
+				  <input class="form pull-right" placeholder="Filter (coming soon)"></input>
+				  <i class="fa fa-filter pull-right"></i>
+			  </div>
+			  <div class="panel-body" style="max-height: 500px; overflow: auto; ">
+
+				<table id="packetList" class="table table-condensed table-hover" >
+				  	<thead><tr>
+				  		<th>#</th>
+					  	<th>Time</th>
+					  	<th>Delta</th>
+					  	<th>Source</th> <!-- <small class="pull-right text-muted">(port)</small> -->
+					  	<th>Destination</th>
+					  	<th>Protocol</th>
+					  	<th>Info</th>
+					  	<!-- <th>Length</th> -->
+				  	</tr></thead>
+
+			  		{% for packet in details['packets'] %}
+			  		<tr><tbody>
+			  				<td class="number">{{ packet.number }}</td>
+			  				<td>{{ packet.time }}</td>
+			  				<td>{{ packet.delta }}</td>
+			  			  	<td>{{ packet.src_ip}} </td>
+			  			  	<td>{{ packet.dst_ip }} </td> <!-- <small class="pull-right text-muted">({{ packet.dst_port }}) </small> -->
+			  			  	<td>{{ packet.protocol }}</td>
+			  			  	<td style="max-width: 200px;white-space:nowrap; overflow: hidden;">{{ packet.desc }}</td>
+			  			  	<!-- <td>{{ packet.length }}</td> -->
+			  		</tr></tbody>
+			  		{% endfor %}
+			  	</table>
+			</div>
+		  	<div class="packetView">
+		  		<div class="spinner text-center hide"><i class="fa fa-spinner fa-spin fa-2x"></i></div>
+		  		<div class="packetPane panel-group" id="accordion" role="tablist" aria-multiselectable="true">
+		  		</div>
+		  	</div>		
+		</div>
+		{% endif %}
+
+	</div>
+</div>
+
+
+{% endblock %}
+
+{% block scripts %}
+{{ super() }}
+
+<script src="{{ url_for('static', filename='bootstrap-tagsinput.min.js') }}"></script>
+<script src="{{ url_for('static', filename='bootstrap3-typeahead.min.js') }}"></script>
+
+<script type="text/javascript">
+
+	var tag_list = [{% for tag in tags%} "{{tag}}",{% endfor %}];
+
+	$(document).ready(function(){
+
+		$('a#packetStats').on('click', function(e){
+			e.preventDefault();
+			$('div.packetStats').toggleClass('hide');
+		});
+
+		$('.bootstrap-tagsinput').prepend('<i class="fa fa-tags"></i>');
+
+		$('input#tags').on('itemAdded itemRemoved', function(event) {
+	   		event.preventDefault();
+	   		var data = $('input#tags').val();
+
+	   		$.ajax({
+	   			type : "POST",
+	   			url : "/savetags/{{ traceFile.id }}",
+	   			data : data,
+	   			dataType : "json",
+	   			contentType: 'application/json;charset=UTF-8'
+	   		});
+
+	   	});
+
+	   	$('a#editName').on('click', function(event) {
+	   		event.preventDefault();
+
+	   		$('span.editname').removeClass('hide');
+	   		$('span.filename').addClass('hide');
+	   		$('input.filename').val("{{ traceFile.name }}");
+	   		$('input.filename').focus();
+
+	   	});
+
+	   	$('a#saveName').on('click', function(event){
+	   		event.preventDefault();
+	   		data = $('input.filename').val();
+
+	   		$.ajax({
+	   			type : "POST",
+	   			url : "/savename/{{ traceFile.id }}",
+	   			data : data,
+	   			dataType : "json",
+	   			contentType: 'application/json;charset=UTF-8',
+
+	   		});
+
+	   		$('span.editname').addClass('hide');
+	   		$('span.filename').removeClass('hide');
+	   		$('span.filename span').text(data);
+	   	});
+	   	
+	   	$('input.filename').keyup(function(e){
+	   		event.preventDefault();
+	   		
+	   		if (e.keyCode == 13) {
+	   			$('a#saveName').trigger('click');
+	   		}
+	   });
+
+	   $('tr').on('click', function(e){
+	   		e.preventDefault();
+	   		var packetPane = $('.packetPane')
+	   		packetPane.html('');
+	   		$('.spinner').removeClass('hide');
+
+	   		var packetDetail = $.ajax({
+	   			type : "GET",
+	   			url : "/captures/{{ traceFile.id }}/packetDetail/" + $(this).children().first().text(),
+	   			contentType: 'application/text;charset=UTF-8',
+	   			success: function(text){
+			   		$('.spinner').addClass('hide');
+			   		packetPane.html(text);
+			   	}
+
+	   		});
+
+	   });
+
+		$(".bootstrap-tagsinput input").typeahead({ source:tag_list, confirmKeys: [13, 44] });
+
+		$('.collapse').collapse();
+	});
+</script>
+{% endblock %}

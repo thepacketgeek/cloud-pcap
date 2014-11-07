@@ -1,0 +1,45 @@
+{% extends "layout.html" %} 
+{% import "bootstrap/wtf.html" as wtf %} 
+
+{% block title %}
+{{ super()}}
+Login
+{% endblock %} 
+
+{% block content %}
+{{ super() }}
+<div class="container content">
+	
+	<div class="col-md-4 col-md-offset-4">
+		<div class="page-header">
+		{% for category, message in get_flashed_messages(with_categories=true, category_filter=["warning", "danger"]) %} 
+		<div class="alert alert-{{ category }}">
+			<button type="button" class="close" data-dismiss="alert">&times;</button>
+			{{ message }}
+		</div>
+		{% endfor %}
+		<div>
+
+		<div class="panel panel-default">
+		  <div class="panel-heading">
+		    <h3 class="panel-title text-center">Login</h3>
+		  </div>
+		  <div class="panel-body">
+		    {{ wtf.quick_form(form) }} 
+		  </div>
+		</div>
+
+		
+	</div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+{{ super() }}
+<script type="text/javascript">
+	$(document).ready(function(){
+		$('input#username').focus();
+	});
+</script>
+
+{% endblock %}

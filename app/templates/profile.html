@@ -1,0 +1,45 @@
+{% extends "layout.html" %} 
+{% import "bootstrap/wtf.html" as wtf %} 
+
+{% block title %}
+{{ super()}}
+Profile - {{ current_user.username }}
+{% endblock %} 
+
+{% block content %}
+{{ super() }}
+<div class="container content">
+	
+	<div class="col-md-8 col-md-offset-2">
+		<div class="page-header">
+		{% for category, message in get_flashed_messages(with_categories=true, category_filter=["warning", "danger", "success"]) %} 
+		<div class="alert alert-{{ category }}">
+			<button type="button" class="close" data-dismiss="alert">&times;</button>
+			{{ message }}
+		</div>
+		{% endfor %}
+		<div>
+
+	    <h3>Profile Settings</h3>
+		<div class="panel panel-default">
+		  <div class="panel-body">
+		    <p>Token: {{ current_user.token }}</p>
+		    {{ wtf.quick_form(form) }} 
+		  </div>
+		</div>
+
+		
+	</div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+{{ super() }}
+<script type="text/javascript">
+	$(document).ready(function(){
+		$('input#email').focus();
+	});
+
+</script>
+
+{% endblock %}

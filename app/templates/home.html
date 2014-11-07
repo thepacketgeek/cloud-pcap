@@ -1,0 +1,171 @@
+{% extends "layout.html" %} 
+{% import "bootstrap/wtf.html" as wtf %} 
+
+{% block title %}
+{{ super()}}
+Cloneshark
+{% endblock %} 
+
+{% block content %}
+{{ super() }}
+
+
+<div class="container-fluid content">
+	
+	<div class="col-md-12">
+		{% for category, message in get_flashed_messages(with_categories=true) %} 
+		<div class="alert alert-{{ category }}">
+			<button type="button" class="close" data-dismiss="alert">&times;</button>
+			{{ message }}
+		</div>
+		{% endfor %}
+		<br/>
+		
+
+		<div class="row">
+			<div class="col-lg-9 col-md-9 tracefiles">
+				<div class="panel panel-default">
+					<div class="panel-heading">
+						Trace Files
+						<small class="pull-right">{{ traceFiles|length }} Capture Files</small>
+					</div>
+					<div class="panel-body" >
+						<table class="table tablesorter">
+							<tr>
+								<th style="width: 60%">Name</th>
+								<th>Type</th>
+								<th># Packets</th>
+								<th>Size (KB)</th>
+								<th></th>
+							</tr>
+							{% for traceFile in traceFiles %}
+								<tr>
+									<td><a href="{{ url_for('captures', file_id=traceFile.id) }}"><i class="fa fa-file"></i> {{ traceFile.name }}</a></td>
+									<td>{{ traceFile.filetype }}</td>
+									<td>{{ counts[traceFile.id]|format_comma }}</td>
+									<td>{{ ((traceFile.filesize|float) / 1024|float)|format_comma }}</td>
+									<td><i class='fa fa-close text-danger deleteButton' data-toggle="modal" data-target="#deleteModal" data-id="{{traceFile.id}}" data-name="{{traceFile.name}}"></i></td>
+								</tr>
+							{% endfor %}
+						</table>
+					</div>
+				</div>
+			</div>
+			<div class="col-lg-3 col-md-3 upload">
+				<form class="dropzone" action="{{ url_for('upload_file') }}" id="captureUpload"></form>
+			</div>
+			<div class="col-lg-3 col-md-3">
+				<div class="panel panel-default" >
+					<div class="panel-heading">Tags
+
+						<a href="{{ url_for('home') }}"><i class="fa fa-ban pull-right"></i></a>
+					</div>
+					<div class="panel-body">
+						<ul class="list-group">
+						
+						{% for tag in tags %}
+							<a href="{{ url_for('home', tag=tag) }}"><button class="tag-btn btn btn-sm btn-primary">{{ tag }}</button></a>
+						{% endfor %}
+						</ul>
+					</div>
+				</div>
+			</div>
+		</div>
+
+
+
+		<!-- Temp Password Modal -->
+		<div class="modal fade" id="tempPasswordModal">
+		  <div class="modal-dialog">
+		    <div class="modal-content">
+		      <div class="modal-header">
+		        
+		        <h4 class="modal-title">Temporary Password</h4>
+		      </div>
+		      <div class="modal-body">
+		      	<p>Hi {{current_user.username|upper }}, you currently have a temporary password and must change it to continue.</p>
+		        <form class="form" method="post" role="form">
+		          {{ form.hidden_tag() }}
+		          {{ wtf.form_errors(form, hiddens="only") }}
+
+		          {{ wtf.form_field(form.temp_password) }}
+		          {{ wtf.form_field(form.new_password1) }}
+		          {{ wtf.form_field(form.new_password2) }}
+		      </div>
+		      <div class="modal-footer">
+		        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+		        {{ wtf.form_field(form.submit, button_map={'submit': 'primary'}) }}
+		      </div>
+		        </form>
+		    </div><!-- /.modal-content -->
+		  </div><!-- /.modal-dialog -->
+		</div><!-- /.modal -->
+
+		<!-- Delete Modal -->
+		<div class="modal fade" id="deleteModal">
+		  <div class="modal-dialog">
+		    <div class="modal-content">
+		      <div class="modal-header">
+		        <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+		        <h4 class="modal-title">Delete Capture File</h4>
+		      </div>
+		      <div class="modal-body">
+		        <p></p>
+		      </div>
+		      <div class="modal-footer">
+		      	<button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+    			<button type="button" class="btn btn-danger"><a id="confirmDelete">Confirm Delete</a></button>
+		      </div>
+		    </div><!-- /.modal-content -->
+		  </div><!-- /.modal-dialog -->
+		</div><!-- /.modal -->
+		
+	</div>
+</div>
+
+
+{% endblock %}
+
+{% block scripts %}
+{{ super() }}
+
+<script src="{{ url_for('static', filename='dropzone.min.js') }}"></script>
+<script src="{{ url_for('static', filename='jquery.tablesorter.min.js') }}"></script>
+
+<script type="text/javascript">
+	Dropzone.autoDiscover = false;
+
+	$(document).ready(function(){
+
+		{% if current_user.temp_password == True %}
+
+			$('#tempPasswordModal').on('shown.bs.modal', function (e) {
+				$('input#api_master').focus();
+			});
+
+			$('#tempPasswordModal').modal(show=true);
+
+		{% endif %}
+
+		$('.deleteButton').on('click', function(){
+			var file_id = $(this).data('id');
+			var file_name = $(this).data('name');
+			$('#deleteModal .modal-body p').html('Are you sure you want to delete ' + file_name + '?');
+			$('#confirmDelete').attr('href', 'captures/delete/' + file_id);
+		});
+
+		var captureUpload = new Dropzone('#captureUpload', {
+			url: "{{ url_for('api_upload_file', token=current_user.token) }}",
+			maxFilesize: 50,
+			init: function() {
+			    this.on("success", function(file) { 
+			    	location.reload(); 
+			    });
+			  }
+		});
+
+		$('.tablesorter').tablesorter({ sortList: [[0,0]]});
+
+	});
+</script>
+{% endblock %}

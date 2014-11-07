@@ -1,0 +1,7 @@
+*.pyc
+.DS_Store
+env
+venv
+*.sqlite*
+app/migrations/*
+app/static/tracefiles/*

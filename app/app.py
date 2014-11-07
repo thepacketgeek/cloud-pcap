@@ -19,7 +19,7 @@ from pcap_helper import get_capture_count, decode_capture_file_summary, get_pack
 basedir = os.path.abspath(os.path.dirname(__file__))
 
 class Config:
-    SQLALCHEMY_DATABASE_URI = 'sqlite:///' + os.path.join(basedir, 'db.sqlite')
+    # SQLALCHEMY_DATABASE_URI = 'sqlite:///' + os.path.join(basedir, 'db.sqlite')
     SQLALCHEMY_COMMIT_ON_TEARDOWN = True
     SECRET_KEY = 'yCt2CTTsLHvL#BG6'
 

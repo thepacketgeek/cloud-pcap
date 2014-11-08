@@ -38,7 +38,7 @@ Captures - {{ traceFile.name }}
 
 
 						<div class="col-md-3 text-center">
-							<small class=""> ({{ details['stats']['count'] }} packets, {{ ((traceFile.filesize|float) / 1024.0)|format_comma}} KBytes)</small>
+							<small class=""> ({{ traceFile.packet_count }} packets, {{ ((traceFile.filesize|float) / 1024.0)|format_comma}} KBytes)</small>
 							<a href="#" id="packetStats"> 
 								<i class="fa fa-bar-chart fa-2x pull-right" style="margin-top: -3px;"></i> 
 							</a>

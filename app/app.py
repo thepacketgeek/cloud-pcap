@@ -91,7 +91,7 @@ class TraceFile(db.Model):
     username = db.relationship('User')
     filesize = db.Column(db.Integer) #Bytes
     filetype = db.Column(db.String(64))
-    # packet_count = db.Column()
+    packet_count = db.Column(db.Integer)
 
     def __repr__(self):
         return '<TraceFile %r, filename: %r>\n' % (self.name, self.filename)
@@ -185,13 +185,9 @@ def home():
         else:
             traceFiles = TraceFile.query.filter_by(user_id=current_user.id).all()
 
-        counts = {}
-        for traceFile in traceFiles:
-            counts[traceFile.id] = get_capture_count(traceFile)
-
         tags = set([x.name for x in Tag.query.all()])
 
-        return render_template('home.html', form=form, traceFiles=traceFiles, counts=counts, tags=tags)
+        return render_template('home.html', form=form, traceFiles=traceFiles, tags=tags)
 
 @app.route('/captures/<file_id>')
 @login_required
@@ -362,7 +358,8 @@ def api_upload_file(token):
             user_id = user.id,
             filename = uuid_filename,
             filetype = filetype,
-            filesize = os.path.getsize(os.path.join(UPLOAD_FOLDER, uuid_filename))
+            filesize = os.path.getsize(os.path.join(UPLOAD_FOLDER, uuid_filename)),
+            packet_count = get_capture_count(uuid_filename)
             )
 
         db.session.add(new_file)

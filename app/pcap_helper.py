@@ -1,20 +1,19 @@
-import os, datetime, pyshark, pcap, sys
+import os, datetime, pyshark, sys
 from cStringIO import StringIO
 
 basedir = os.path.abspath(os.path.dirname(__file__))
 UPLOAD_FOLDER = os.path.join(basedir, 'static/tracefiles/')
 
 
-def get_capture_count(traceFile):
-	p = pcap.pcapObject()
-	p.open_offline(str(os.path.join(UPLOAD_FOLDER, traceFile.filename)))
+def get_capture_count(filename):
+	p = pyshark.FileCapture(os.path.join(UPLOAD_FOLDER, filename), only_summaries=True, keep_packets=False)
 
 	count = []
 	
 	def counter(*args):
 		count.append(args[0])
 
-	p.dispatch(0, counter)
+	p.apply_on_packets(counter, timeout=100000)
 
 	return len(count)
 
@@ -25,8 +24,7 @@ def decode_capture_file_summary(traceFile):
 	details = {
 		'stats': {
 			'breakdown': {},
-			'length_buckets': {'0-200': 0, '201-450': 0, '451-800':0, '801-1200':0, '1201-1500': 0},
-			'count': 0
+			'length_buckets': {'0-200': 0, '201-450': 0, '451-800':0, '801-1200':0, '1201-1500': 0}
 		},
 		'packets': [],
 		# 'linechart': []
@@ -75,7 +73,6 @@ def decode_capture_file_summary(traceFile):
 		return 'Capture File is too large, please try downloading and analyzing locally.'
 
 	details['stats']['avg_length'] = sum(avg_length) / len(avg_length)
-	details['stats']['count'] = len(avg_length)
 
 	return details
 

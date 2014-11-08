@@ -42,7 +42,7 @@ Cloud-Pcap
 								<tr>
 									<td><a href="{{ url_for('captures', file_id=traceFile.id) }}"><i class="fa fa-file"></i> {{ traceFile.name }}</a></td>
 									<td>{{ traceFile.filetype }}</td>
-									<td>{{ counts[traceFile.id]|format_comma }}</td>
+									<td>{{ traceFile.packet_count|format_comma }}</td>
 									<td>{{ ((traceFile.filesize|float) / 1024|float)|format_comma }}</td>
 									<td><i class='fa fa-close text-danger deleteButton' data-toggle="modal" data-target="#deleteModal" data-id="{{traceFile.id}}" data-name="{{traceFile.name}}"></i></td>
 								</tr>

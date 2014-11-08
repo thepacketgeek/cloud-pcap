@@ -17,7 +17,7 @@ from pcap_helper import get_capture_count, decode_capture_file_summary, get_pack
 
 ## app setup
 app = Flask(__name__)
-app.config.from_object(os.environ['APP_SETTINGS'])
+# app.config.from_object(os.environ['APP_SETTINGS'])
 app.config['SQLALCHEMY_DATABASE_URI'] = os.environ['DATABASE_URL']
 app.config['SECRET_KEY '] = 'yCt2CTTsLHvL#BG6'
 app.config['DEBUG '] = True

@@ -23,10 +23,11 @@ A charmingly pathetic knock-off of cloudshark.org that I use for simple cloud pc
 
 ## Built With...
 
-* python
-* Flask
-* Flask-Bootstrap
-* Chartkick
-* HighCharts
-* PyShark
-* pcap
+* [Flask](http://flask.pocoo.org)
+* [Flask-Bootstrap](http://pythonhosted.org/Flask-Bootstrap/)
+* [PyShark](http://kiminewt.github.io/pyshark/)
+* [Chartkick](https://github.com/mher/chartkick.py)
+* [Highcharts](http://api.highcharts.com/highcharts)
+* [Bootstrap-Taginput](http://timschlechter.github.io/bootstrap-tagsinput/examples/)
+* [Bootstrap3-Typeahead](https://github.com/bassjobsen/Bootstrap-3-Typeahead)
+

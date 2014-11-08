@@ -10,23 +10,28 @@ from flask.ext.bootstrap import Bootstrap
 from flask.ext.login import LoginManager, login_required, login_user, UserMixin, logout_user, current_user
 from werkzeug import secure_filename
 from werkzeug.security import generate_password_hash, check_password_hash
+from config import config
 from forms import LoginForm, EditTags, ProfileForm, AddUser, EditUser, TempPasswordForm
 from flask.ext.migrate import Migrate, MigrateCommand
 from pcap_helper import get_capture_count, decode_capture_file_summary, get_packet_detail
 
 
+basedir = os.path.abspath(os.path.dirname(__file__))
+
+class Config:
+    SQLALCHEMY_DATABASE_URI = 'sqlite:///' + os.path.join(basedir, 'db.sqlite')
+    SQLALCHEMY_COMMIT_ON_TEARDOWN = True
+    SECRET_KEY = 'yCt2CTTsLHvL#BG6'
+
+config = Config
+
 ## app setup
 app = Flask(__name__)
-# app.config.from_object(os.environ['APP_SETTINGS'])
-app.config['SQLALCHEMY_DATABASE_URI'] = os.environ['DATABASE_URL']
-app.config['SECRET_KEY '] = 'yCt2CTTsLHvL#BG6'
-app.config['DEBUG '] = False
-
 manager = Manager(app)
 bootstrap = Bootstrap(app)
 
-basedir = os.path.abspath(os.path.dirname(__file__))
 app.jinja_env.add_extension("chartkick.ext.charts")
+app.config.from_object(config)
 ALLOWED_EXTENSIONS = ['pcap','pcapng','cap']
 UPLOAD_FOLDER = os.path.join(basedir, 'static/tracefiles/')
 
@@ -96,7 +101,7 @@ class Tag(db.Model):
 
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(64))
-    file_id = db.Column(db.String(8), db.ForeignKey('tracefiles.id'))
+    file_id = db.Column(db.Integer, db.ForeignKey('tracefiles.id'))
 
     def __repr__(self):
         return '<Tag %r, file_id: %s>\n' % (self.name, self.file_id)
@@ -514,5 +519,5 @@ manager.add_command("shell", Shell(make_context=make_shell_context))
 manager.add_command('db', MigrateCommand)
 
 if __name__ == '__main__':
-    app.run(host='0.0.0.0', debug=True)  
-    # manager.run()
+    # app.run(host='0.0.0.0', debug=True, threaded=True)
+    manager.run()

@@ -1,4 +1,4 @@
-import os, datetime, pyshark, pcap, sys
+import os, datetime, pyshark, sys
 from cStringIO import StringIO
 
 basedir = os.path.abspath(os.path.dirname(__file__))
@@ -6,17 +6,19 @@ UPLOAD_FOLDER = os.path.join(basedir, 'static/tracefiles/')
 
 
 def get_capture_count(traceFile):
-	p = pcap.pcapObject()
-	p.open_offline(str(os.path.join(UPLOAD_FOLDER, traceFile.filename)))
+	# p = pcap.pcapObject()
+	# p.open_offline(str(os.path.join(UPLOAD_FOLDER, traceFile.filename)))
 
-	count = []
+	# count = []
 	
-	def counter(*args):
-		count.append(args[0])
+	# def counter(*args):
+	# 	count.append(args[0])
 
-	p.dispatch(0, counter)
+	# p.dispatch(0, counter)
 
-	return len(count)
+	# return len(count)
+	# 
+	return 5
 
 def decode_capture_file_summary(traceFile):
 	cap = pyshark.FileCapture(os.path.join(UPLOAD_FOLDER, traceFile.filename), only_summaries=True, keep_packets=False)

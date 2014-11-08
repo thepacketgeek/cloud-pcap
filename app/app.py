@@ -1,4 +1,4 @@
-import os, datetime, time, random, json, uuid, chartkick, config
+import os, datetime, time, random, json, uuid, chartkick
 from os.path import splitext
 from flask import redirect, render_template, url_for, flash, request, Flask, send_file
 from flask.ext.sqlalchemy import SQLAlchemy
@@ -19,6 +19,9 @@ from pcap_helper import get_capture_count, decode_capture_file_summary, get_pack
 app = Flask(__name__)
 app.config.from_object(os.environ['APP_SETTINGS'])
 app.config['SQLALCHEMY_DATABASE_URI'] = os.environ['DATABASE_URL']
+app.config['SECRET_KEY '] = 'yCt2CTTsLHvL#BG6'
+app.config['DEBUG '] = True
+
 manager = Manager(app)
 bootstrap = Bootstrap(app)
 

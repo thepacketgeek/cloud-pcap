@@ -19,6 +19,7 @@ MarkupSafe==0.18
 Pygments==1.6
 SQLAlchemy==0.8.4
 SQLAlchemy-Utils==0.26.16
+sqlalchemy-migrate==0.9.2
 WTForms==1.0.5
 WTForms-Alchemy==0.12.9
 WTForms-Components==0.9.6
@@ -41,6 +42,7 @@ itsdangerous==0.23
 lxml==3.4.0
 paramiko==1.12.2
 py==1.4.26
+psycopg2
 pyshark==0.3.3
 python-dateutil==2.2
 requests==2.3.0

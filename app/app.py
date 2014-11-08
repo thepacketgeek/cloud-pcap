@@ -96,7 +96,7 @@ class Tag(db.Model):
 
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(64))
-    file_id = db.Column(db.Integer, db.ForeignKey('tracefiles.id'))
+    file_id = db.Column(db.String(8), db.ForeignKey('tracefiles.id'))
 
     def __repr__(self):
         return '<Tag %r, file_id: %s>\n' % (self.name, self.file_id)

@@ -12,6 +12,10 @@ div.content {
 	padding-bottom: 30px;
 }
 
+* {
+	border-radius: 0 !important;
+}
+
 .navbar {
 	border-radius: 0px;
 }
@@ -28,13 +32,10 @@ div.content {
 .modal-dialog {
     margin-top: 100px;
 }
-/*
-.panel, .panel-heading, .panel-body, .dropzone {
-	border-radius: 0;
-}*/
 
-* {
-	border-radius: 0 !important;
+button a {
+	color: #fff;
+	text-decoration: none;
 }
 
 /*########  Tag/Typeahead Layout ########*/

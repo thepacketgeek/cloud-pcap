@@ -20,7 +20,7 @@ app = Flask(__name__)
 # app.config.from_object(os.environ['APP_SETTINGS'])
 app.config['SQLALCHEMY_DATABASE_URI'] = os.environ['DATABASE_URL']
 app.config['SECRET_KEY '] = 'yCt2CTTsLHvL#BG6'
-app.config['DEBUG '] = True
+app.config['DEBUG '] = False
 
 manager = Manager(app)
 bootstrap = Bootstrap(app)

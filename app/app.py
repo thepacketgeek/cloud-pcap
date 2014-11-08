@@ -18,6 +18,7 @@ from pcap_helper import get_capture_count, decode_capture_file_summary, get_pack
 ## app setup
 app = Flask(__name__)
 app.config.from_object(os.environ['APP_SETTINGS'])
+app.config['SQLALCHEMY_DATABASE_URI'] = os.environ['DATABASE_URL']
 manager = Manager(app)
 bootstrap = Bootstrap(app)
 
@@ -510,4 +511,5 @@ manager.add_command("shell", Shell(make_context=make_shell_context))
 manager.add_command('db', MigrateCommand)
 
 if __name__ == '__main__':
-    manager.run()
+    app.run(host='0.0.0.0', debug=True)  
+    # manager.run()

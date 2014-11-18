@@ -8,18 +8,21 @@ UPLOAD_FOLDER = os.path.join(basedir, 'static/tracefiles/')
 def get_capture_count(filename):
 	p = pyshark.FileCapture(os.path.join(UPLOAD_FOLDER, filename), only_summaries=True, keep_packets=False)
 
-	count = []
-	
-	def counter(*args):
-		count.append(args[0])
+	p.load_packets()
 
-	p.apply_on_packets(counter, timeout=100000)
+	return len(p)
 
-	return len(count)
+def decode_capture_file_summary(traceFile, display_filter=None):
+		
+	if display_filter:
+		cap = pyshark.FileCapture(os.path.join(UPLOAD_FOLDER, traceFile.filename), keep_packets=False, only_summaries=True, display_filter=display_filter)
+	else:	
+		cap = pyshark.FileCapture(os.path.join(UPLOAD_FOLDER, traceFile.filename), keep_packets=False, only_summaries=True)
 
-def decode_capture_file_summary(traceFile):
-	cap = pyshark.FileCapture(os.path.join(UPLOAD_FOLDER, traceFile.filename), only_summaries=True, keep_packets=False)
+	cap.load_packets(timeout=5)
 
+	if len(cap) == 0:
+		return 0, 'No packets found or the display filter is invalid.'
 
 	details = {
 		'stats': {
@@ -29,10 +32,9 @@ def decode_capture_file_summary(traceFile):
 		'packets': [],
 		# 'linechart': []
 		}
+	
 	avg_length = []
 	
-	
-
 	def decode_packet(packet):
 
 		pkt_details = {
@@ -66,15 +68,16 @@ def decode_capture_file_summary(traceFile):
 		except KeyError:
 			details['stats']['breakdown'][packet.protocol] = 1
 
+	print 'decode pcaket loaded'
 
 	try:
-		cap.apply_on_packets(decode_packet, timeout=30)
+		cap.apply_on_packets(decode_packet, timeout=10)
 	except:
-		return 'Capture File is too large, please try downloading and analyzing locally.'
+		return 0, 'Capture File is too large, please try downloading and analyzing locally.'
 
 	details['stats']['avg_length'] = sum(avg_length) / len(avg_length)
 
-	return details
+	return len(cap), details
 
 
 def get_packet_detail(traceFile, number):

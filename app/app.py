@@ -195,6 +195,8 @@ def captures(file_id):
 
     form = EditTags()
 
+    display_filter = request.args.get('display_filter')
+
     traceFile = TraceFile.query.get_or_404(file_id)
 
     try:
@@ -202,15 +204,15 @@ def captures(file_id):
     except NoResultFound:
         form.tags.data = ''
 
-    details = decode_capture_file_summary(traceFile)
+    display_count, details = decode_capture_file_summary(traceFile, display_filter)
 
     if isinstance(details, basestring):
         flash(details, 'warning')
-        return render_template('captures.html', traceFile=traceFile, form=form)
+        return render_template('captures.html', traceFile=traceFile, form=form, display_count=display_count)
     
     tags = set([x.name for x in Tag.query.all()])
 
-    return render_template('captures.html', traceFile=traceFile, form=form, details=details, tags=tags)
+    return render_template('captures.html', traceFile=traceFile, form=form, display_count=display_count, details=details, tags=tags)
 
 
 @app.route('/captures/<file_id>/packetDetail/<int:number>')
@@ -375,7 +377,7 @@ def api_upload_file(token):
         db.session.commit()
 
         log('info','File uploaded by \'%s\': %s.' % (user.username, traceFile.filename))
-        return json.dumps({"filename": traceFile.filename,"id":new_file.id}), 202
+        return json.dumps({"filename": traceFile.name,"id":new_file.id}), 202
 
     else:
         return json.dumps({"status":406,"exceptions":["Not a valid file type. (pcap, pcapng, cap)"]}), 406

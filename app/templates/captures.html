@@ -84,15 +84,19 @@ Captures - {{ traceFile.name }}
 			</div>
 		</div>
 
-		{% if details %}
 		<div class="row">
 			<div class="panel panel-default">
 			  <div class="panel-heading">
 				  Packets
-				  <input class="form pull-right" placeholder="Filter (coming soon)"></input>
-				  <i class="fa fa-filter pull-right"></i>
+				  <a href="#" id="clear-filter"><i  class="fa fa-ban text-danger pull-right"></i></a>
+				  <small class="text-center text-muted">({{ display_count }} packets displayed)</small>
+				  <div class="filter-wrapper pull-right">
+					  <i class="fa fa-filter"></i>
+					  <input id="display-filter" class="form" placeholder="Display Filter"></input>
+				  </div>
 			  </div>
 			  <div class="panel-body" style="max-height: 500px; overflow: auto; ">
+		{% if details %}
 
 				<table id="packetList" class="table table-condensed table-hover" >
 				  	<thead><tr>
@@ -125,6 +129,9 @@ Captures - {{ traceFile.name }}
 		  		<div class="packetPane panel-group" id="accordion" role="tablist" aria-multiselectable="true">
 		  		</div>
 		  	</div>		
+		</div>
+		{% else %}
+			</div>
 		</div>
 		{% endif %}
 
@@ -195,7 +202,7 @@ Captures - {{ traceFile.name }}
 	   		$('span.filename span').text(data);
 	   	});
 	   	
-	   	$('input.filename').keyup(function(e){
+	   $('input.filename').keyup(function(e){
 	   		event.preventDefault();
 	   		
 	   		if (e.keyCode == 13) {
@@ -220,6 +227,40 @@ Captures - {{ traceFile.name }}
 
 	   		});
 
+	   });
+
+	   function getUrlVars()
+	   {
+	       var vars = [], hash;
+	       var hashes = window.location.href.slice(window.location.href.indexOf('?') + 1).split('&');
+	       for(var i = 0; i < hashes.length; i++)
+	       {
+	           hash = hashes[i].split('=');
+	           vars.push(hash[0]);
+	           vars[hash[0]] = hash[1];
+	       }
+	       return vars;
+	   }
+
+	   var display_filter = decodeURIComponent(getUrlVars()["display_filter"]);
+
+	   if (display_filter != 'undefined') {
+	   	  $('input#display-filter').val(display_filter);
+	   }
+
+
+	   $('input#display-filter').keyup(function(e){
+	   		event.preventDefault();
+	   		
+	   		if (e.keyCode == 13) {
+	   			window.location.href= window.location.pathname + '?display_filter=' + $('input#display-filter').val();
+	   		}
+	   });
+
+	   $('#clear-filter').on('click', function(e){
+	   		e.preventDefault();
+	   		console.log('clear filter clicked: '+ window.location.pathname.split('?')[0]);
+	   		window.location.href= window.location.pathname.split('?')[0];
 	   });
 
 		$(".bootstrap-tagsinput input").typeahead({ source:tag_list, confirmKeys: [13, 44] });

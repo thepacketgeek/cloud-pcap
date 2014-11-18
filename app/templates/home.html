@@ -140,7 +140,7 @@ Cloud-Pcap
 		{% if current_user.temp_password == True %}
 
 			$('#tempPasswordModal').on('shown.bs.modal', function (e) {
-				$('input#api_master').focus();
+				$('input#temp_password').focus();
 			});
 
 			$('#tempPasswordModal').modal(show=true);

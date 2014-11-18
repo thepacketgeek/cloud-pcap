@@ -12,6 +12,7 @@ A charmingly pathetic knock-off of cloudshark.org that I use for simple cloud pc
     * Temp password upon account creation
 * Packet Overview
     * Capture summary stats
+    * [Display Filters](http://wiki.wireshark.org/DisplayFilters)
     * Packet header list
     * Click a packet to see more details 
 
@@ -20,6 +21,13 @@ A charmingly pathetic knock-off of cloudshark.org that I use for simple cloud pc
 ![screenshot1](docs/cloud-pcap1.png "Screenshot #1")
 
 ![screenshot2](docs/cloud-pcap2.png "Screenshot #2")
+
+## Coming Soon
+
+* Vagrantfile for quick development environment setup
+* Heroku-Deployment ready
+* Display Filtering Auto-complete
+
 
 ## Built With...
 

@@ -1,9 +1,9 @@
-import os, datetime, time, random, json, uuid, chartkick
+import os, datetime, time, random, json, uuid, chartkick, base64, hashlib
 from os.path import splitext
 from flask import redirect, render_template, url_for, flash, request, Flask, send_file
 from flask.ext.sqlalchemy import SQLAlchemy
 from sqlalchemy import desc
-from sqlalchemy.exc import IntegrityError
+from sqlalchemy.exc import IntegrityError, ProgrammingError
 from sqlalchemy.orm.exc import NoResultFound
 from flask.ext.script import Manager, Shell
 from flask.ext.bootstrap import Bootstrap
@@ -19,7 +19,8 @@ from pcap_helper import get_capture_count, decode_capture_file_summary, get_pack
 basedir = os.path.abspath(os.path.dirname(__file__))
 
 class Config:
-    SQLALCHEMY_DATABASE_URI = 'sqlite:///' + os.path.join(basedir, 'db.sqlite')
+    SQLALCHEMY_DATABASE_URI = 'postgresql://localhost/cloud-pcap'
+    # SQLALCHEMY_DATABASE_URI = 'sqlite:///' + os.path.join(basedir, 'db.sqlite')
     SQLALCHEMY_COMMIT_ON_TEARDOWN = True
     SECRET_KEY = 'yCt2CTTsLHvL#BG6'
 
@@ -101,7 +102,7 @@ class Tag(db.Model):
 
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(64))
-    file_id = db.Column(db.Integer, db.ForeignKey('tracefiles.id'))
+    file_id = db.Column(db.String(8), db.ForeignKey('tracefiles.id'))
 
     def __repr__(self):
         return '<Tag %r, file_id: %s>\n' % (self.name, self.file_id)
@@ -116,11 +117,20 @@ class Log(db.Model):
     def __repr__(self):
         return '<Log: %s - %s - %s>\n' % (self.timestamp, self.level, self.description)
 
-def allowed_file(filename):
-    return '.' in filename and (filename.split('.')[-1] in ALLOWED_EXTENSIONS)
-
 def get_uuid():
     return base64.b64encode(hashlib.sha256( str(random.getrandbits(256)) ).digest(), random.choice(['rA','aZ','gQ','hH','hG','aR','DD'])).rstrip('==')
+
+# Create DB tables and default admin user if they don't exist
+def init_db(username='admin', password='cloudpcap'):
+    print 'Initizializing DB'
+    db.create_all()
+    admin = User(username=username, password=password, role='admin', token=get_uuid())
+    db.session.add(admin)
+    print 'User \'%s\' added with password: %s' % (username, password)
+    db.session.commit()
+
+def allowed_file(filename):
+    return '.' in filename and (filename.split('.')[-1] in ALLOWED_EXTENSIONS)
 
 def log(level, description):
     note = Log(timestamp=datetime.datetime.now(), level=level.upper(), description=description)
@@ -513,7 +523,7 @@ def schedule_updates():
     log('info', '-------------- App has started --------------')
 
 def make_shell_context():
-    return dict(app=app, db=db, User=User, Tag=Tag, TraceFile=TraceFile, Log=Log)
+    return dict(app=app, db=db, User=User, Tag=Tag, TraceFile=TraceFile, Log=Log, init_db=init_db)
 manager.add_command("shell", Shell(make_context=make_shell_context))
 manager.add_command('db', MigrateCommand)
 

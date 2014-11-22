@@ -16,6 +16,21 @@ A charmingly pathetic knock-off of cloudshark.org that I use for simple cloud pc
     * Packet header list
     * Click a packet to see more details 
 
+## Installation/Running
+
+* `$ git clone https://github.com/thepacketgeek/cloud-pcap.git`
+* Install PostgreSQL and create an empty database
+	* Put psql path in config.py DevelopmentConfig() class
+	* `$ export APP_SETTINGS="config.DevelopmentConfig"`
+* `$ cd cloud-pcap`
+* `$ pip install -r requirements.txt`
+* `$ cd app`
+* `$ python app.py shell`
+    * `>>> init_db`
+    * `>>> db.session.commit()`
+   	* Default user admin/cloudpcap is now setup
+* `$ python app.py runserver`
+
 ## Screenshots
 
 ![screenshot1](docs/cloud-pcap1.png "Screenshot #1")
@@ -24,9 +39,10 @@ A charmingly pathetic knock-off of cloudshark.org that I use for simple cloud pc
 
 ## Coming Soon
 
-* Vagrantfile for quick development environment setup
+* Group permissions?
 * Heroku-Deployment ready
 * Display Filtering Auto-complete
+* Vagrantfile for quick development environment setup
 
 
 ## Built With...

@@ -37,6 +37,8 @@ A charmingly pathetic knock-off of cloudshark.org that I use for simple cloud pc
 
 ![screenshot2](docs/cloud-pcap2.png "Screenshot #2")
 
+![screenshot3](docs/cloud-pcap3.png "Screenshot #3")
+
 ## Coming Soon
 
 * Group permissions?

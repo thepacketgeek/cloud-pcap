@@ -68,8 +68,6 @@ def decode_capture_file_summary(traceFile, display_filter=None):
 		except KeyError:
 			details['stats']['breakdown'][packet.protocol] = 1
 
-	print 'decode pcaket loaded'
-
 	try:
 		cap.apply_on_packets(decode_packet, timeout=10)
 	except:
@@ -125,7 +123,20 @@ def get_packet_detail(traceFile, number):
 
 			''' % {'name': line[:-1], 'link': line.replace(' ', '-').strip(':')}
 		else:	
-			detail += '<p>%s</p>\n' % line
+			keyword = line.split(': ')[0] + ': '
+
+			try:
+				value = line.split(': ')[1]
+			except IndexError:
+				keyword = ''
+				value = line
+			
+			try:
+				keyword = keyword.split('= ')[1]
+			except IndexError:
+				pass
+
+			detail += '<p><strong>%s</strong> %s</p>\n' % (keyword, value)
 
 	detail += '</div></div></div>'
 	return detail

@@ -39,7 +39,7 @@ Captures - {{ traceFile.name }}
 
 						<div class="col-md-3 text-center">
 							<small class=""> ({{ traceFile.packet_count }} packets, {{ ((traceFile.filesize|float) / 1024.0)|format_comma}} KBytes)</small>
-							<a href="#" id="packetStats"> 
+							<a href="#" id="packetStats" data-toggle="modal", data-target="#packetStatsModal"> 
 								<i class="fa fa-bar-chart fa-2x pull-right" style="margin-top: -3px;"></i> 
 							</a>
 							<a href="{{ url_for('download_file', file_id=traceFile.id, attachment_name='%s.%s' % (traceFile.name, traceFile.filetype)) }}">
@@ -51,36 +51,7 @@ Captures - {{ traceFile.name }}
 					        {{ wtf.form_field(form.tags, class="", **{'data-role':'tagsinput', 'data-provide':'typeahead'}) }}
 				     	</div>
 					</div>
-					
-
-				
-				{% if details %}
-				<div class="panel-body packetStats hide">
-					<div class="row">
-						<div class="col-md-4">
-							{% column_chart details['stats']['breakdown'] with library=library.col_library %}
-						</div>
-						<div class="col-md-4">
-							{% pie_chart details['stats']['length_buckets'] with library=library.pie_library %}
-						</div>
-						<div class="col-md-4">
-							<h4 class="chart-title text-center">Capture File Stats</h4>
-							</br>
-							<div style="min-height: 150px;">
-								<dl class="dl-horizontal">
-								  <dt>Packet Count</dt>
-								  <dd>{{ details['stats']['count'] }}</dd>
-								  <dt>File Size</dt>
-								  <dd>{{ traceFile.filesize|format_comma }} Bytes</dd>
-								  <dt>Average Packet Length</dt>
-								  <dd>{{ details['stats']['avg_length'] }} Bytes</dd>
-								</dl>
-							</div>
-						</div>
-
-					</div>
-				</div>
-				{% endif %}
+			
 			</div>
 		</div>
 
@@ -135,6 +106,45 @@ Captures - {{ traceFile.name }}
 		</div>
 		{% endif %}
 
+
+			<!-- Packet Stats Modal -->
+			<div class="modal fade" id="packetStatsModal">
+			  <div class="modal-dialog modal-lg">
+			    <div class="modal-content">
+			      <div class="modal-header">
+			        
+			        <h4 class="modal-title">Packet Stats</h4>
+			      </div>
+			      <div class="modal-body">
+			      	<div class="col-md-4">
+			      		{% column_chart details['stats']['breakdown'] with library=library.col_library %}
+			      	</div>
+			      	<div class="col-md-4">
+			      		{% pie_chart details['stats']['length_buckets'] with library=library.pie_library %}
+			      	</div>
+			      	<div class="col-md-4">
+			      		<h4 class="chart-title text-center">Capture File Stats</h4>
+			      		</br>
+			      		<div style="min-height: 150px;">
+			      			<dl class="dl-horizontal">
+			      			  <dt>Packet Count</dt>
+			      			  <dd>{{ traceFile.packet_count }}</dd>
+			      			  <dt>File Size</dt>
+			      			  <dd>{{ traceFile.filesize|format_comma }} Bytes</dd>
+			      			  <dt>Average Packet Length</dt>
+			      			  <dd>{{ details['stats']['avg_length'] }} Bytes</dd>
+			      			</dl>
+			      		</div>
+			      	</div>
+
+			      </div>
+			      <div class="modal-footer">
+			        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+			      </div>
+			        </form>
+			    </div><!-- /.modal-content -->
+			  </div><!-- /.modal-dialog -->
+			</div><!-- /.modal -->
 	</div>
 </div>
 

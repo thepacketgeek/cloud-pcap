@@ -56,7 +56,7 @@ Captures - {{ traceFile.name }}
 		</div>
 
 		<div class="row">
-			<div class="panel panel-default">
+			<div class="panel panel-default packets">
 			  <div class="panel-heading">
 				  Packets
 				  <a href="#" id="clear-filter"><i  class="fa fa-ban text-danger pull-right"></i></a>
@@ -66,40 +66,42 @@ Captures - {{ traceFile.name }}
 					  <input id="display-filter" class="form" placeholder="Display Filter"></input>
 				  </div>
 			  </div>
-			  <div class="panel-body" style="max-height: 500px; overflow: auto; ">
+			  <div class="panel-body">
 		{% if details %}
 
-				<table id="packetList" class="table table-condensed table-hover" >
-				  	<thead><tr>
-				  		<th>#</th>
-					  	<th>Time</th>
-					  	<th>Delta</th>
-					  	<th>Source</th> <!-- <small class="pull-right text-muted">(port)</small> -->
-					  	<th>Destination</th>
-					  	<th>Protocol</th>
-					  	<th>Info</th>
-					  	<!-- <th>Length</th> -->
-				  	</tr></thead>
+				<div class="packetList">
+					<table class="table table-condensed table-hover" >
+					  	<thead><tr>
+					  		<th>#</th>
+						  	<th>Time</th>
+						  	<th>Delta</th>
+						  	<th>Source</th> <!-- <small class="pull-right text-muted">(port)</small> -->
+						  	<th>Destination</th>
+						  	<th>Protocol</th>
+						  	<th>Info</th>
+						  	<!-- <th>Length</th> -->
+					  	</tr></thead>
 
-			  		{% for packet in details['packets'] %}
-			  		<tr><tbody>
-			  				<td class="number">{{ packet.number }}</td>
-			  				<td>{{ packet.time }}</td>
-			  				<td>{{ packet.delta }}</td>
-			  			  	<td>{{ packet.src_ip}} </td>
-			  			  	<td>{{ packet.dst_ip }} </td> <!-- <small class="pull-right text-muted">({{ packet.dst_port }}) </small> -->
-			  			  	<td>{{ packet.protocol }}</td>
-			  			  	<td style="max-width: 200px;white-space:nowrap; overflow: hidden;">{{ packet.desc }}</td>
-			  			  	<!-- <td>{{ packet.length }}</td> -->
-			  		</tr></tbody>
-			  		{% endfor %}
-			  	</table>
-			</div>
-		  	<div class="packetView">
-		  		<div class="spinner text-center hide"><i class="fa fa-spinner fa-spin fa-2x"></i></div>
-		  		<div class="packetPane panel-group" id="accordion" role="tablist" aria-multiselectable="true">
-		  		</div>
-		  	</div>		
+				  		{% for packet in details['packets'] %}
+				  		<tr><tbody>
+				  				<td class="number">{{ packet.number }}</td>
+				  				<td>{{ packet.time }}</td>
+				  				<td>{{ packet.delta }}</td>
+				  			  	<td>{{ packet.src_ip}} </td>
+				  			  	<td>{{ packet.dst_ip }} </td> <!-- <small class="pull-right text-muted">({{ packet.dst_port }}) </small> -->
+				  			  	<td>{{ packet.protocol }}</td>
+				  			  	<td style="max-width: 200px;white-space:nowrap; overflow: hidden;">{{ packet.desc }}</td>
+				  			  	<!-- <td>{{ packet.length }}</td> -->
+				  		</tr></tbody>
+				  		{% endfor %}
+				  	</table>
+				</div>
+			  	<div class="packetView">
+			  		<div class="spinner text-center hide"><i class="fa fa-spinner fa-spin fa-2x"></i></div>
+			  		<div class="packetPane" id="accordion" role="tablist" aria-multiselectable="true">
+			  		</div>
+			  	</div>	
+		  	</div>	
 		</div>
 		{% else %}
 			</div>
@@ -220,7 +222,7 @@ Captures - {{ traceFile.name }}
 	   		}
 	   });
 
-	   $('tr').on('click', function(e){
+	   $('tbody tr').on('click', function(e){
 	   		e.preventDefault();
 	   		var packetPane = $('.packetPane')
 	   		packetPane.html('');

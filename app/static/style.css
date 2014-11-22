@@ -1,6 +1,7 @@
 /*########  Change Bootstrap Defaults ########*/
 body {
 	background: #4b80bb;
+	overflow: hidden;
 }
 
 body > .container {
@@ -31,6 +32,7 @@ div.content {
 
 .modal-dialog {
     margin-top: 100px;
+    width: 90%;
 }
 
 button a {
@@ -69,6 +71,9 @@ i.fa-tags {
     font-size: 12px;
 }
 
+.packetStats {
+	z-index: 10;
+}
 .panel-heading .fa {
 	padding-top: 3px;
 }
@@ -120,12 +125,62 @@ i.fa-tags {
 
 /*########  Packet View  ########*/
 
+.spinner {
+	padding-top: 20px;
+}
 
-table#packetList {
+.packetList {
 	font-size: 85%;
+	max-height: 300px;
+	overflow: auto;
+	overflow-y: auto;
+}
+
+.packetList thead {
+	/*position: relative;*/
+	/*height: 30px;*/
+}
+.packetList tbody {
 	margin-top: -5px;
+}
+
+.packetList {
+	/*max-height: 40%;*/
+	padding-bottom: 420px;
 }
 
 .tracefiles {
 	min-height: 350px;
+}
+
+.packets {
+	position: fixed;
+	bottom: 0;
+	min-height: 80%;
+	width: 100%;
+	margin-bottom: 0;
+	margin-left: -15px;
+}
+
+.packets .panel-body {
+	padding: 0;
+}
+.packetView {
+	position: fixed;
+	background-color: #fff;
+	overflow: auto;
+	border-top: 1px solid #bbb;
+	min-height: 400px;
+	max-height: 400px;
+	bottom: 0;
+	width: 100%;
+}
+
+.packetPane .panel-heading, .packetPane .panel-heading {
+	padding: 2px;
+}
+
+.packetPane .panel, .packetPane .panel-body p {
+	margin: 0 2px;
+	padding: 0 2px;
 }

@@ -61,6 +61,14 @@ i.fa-tags {
 
 /*########  Special Layouts ########*/
 
+.dropzone-previews {
+    position: fixed;
+    bottom: 0;
+    height: 40px;
+    width: 100%;
+    font-size: 12px;
+}
+
 .panel-heading .fa {
 	padding-top: 3px;
 }

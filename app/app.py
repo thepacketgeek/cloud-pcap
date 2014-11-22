@@ -10,7 +10,7 @@ from flask.ext.bootstrap import Bootstrap
 from flask.ext.login import LoginManager, login_required, login_user, UserMixin, logout_user, current_user
 from werkzeug import secure_filename
 from werkzeug.security import generate_password_hash, check_password_hash
-from config import config
+import config
 from forms import LoginForm, EditTags, ProfileForm, AddUser, EditUser, TempPasswordForm
 from flask.ext.migrate import Migrate, MigrateCommand
 from pcap_helper import get_capture_count, decode_capture_file_summary, get_packet_detail

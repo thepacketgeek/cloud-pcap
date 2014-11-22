@@ -234,7 +234,7 @@ def packet_detail(file_id, number):
 
     traceFile = TraceFile.query.get_or_404(file_id)
 
-    return get_packet_detail(traceFile, number)
+    return get_packet_detail(traceFile, number), 200
 
 
 @app.route('/users/', methods=['GET', 'POST'])

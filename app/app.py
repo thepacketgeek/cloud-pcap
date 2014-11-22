@@ -191,9 +191,13 @@ def home():
         tag = request.args.get('tag')
 
         if tag:
-            traceFiles = [TraceFile.query.filter_by(user_id=current_user.id).filter_by(id=x.file_id).first() for x in Tag.query.filter_by(name=tag).all()]
+            traceFiles = [TraceFile.query.filter_by(id=x.file_id).first() for x in Tag.query.filter_by(name=tag).all()]
+            # For future use of filtering just one users' files
+            # traceFiles = [TraceFile.query.filter_by(user_id=current_user.id).filter_by(id=x.file_id).first() for x in Tag.query.filter_by(name=tag).all()]
         else:
-            traceFiles = TraceFile.query.filter_by(user_id=current_user.id).all()
+            traceFiles = TraceFile.query.all()
+            # For future use of filtering just one users' files
+            # traceFiles = TraceFile.query.filter_by(user_id=current_user.id).all()
 
         tags = set([x.name for x in Tag.query.all()])
 

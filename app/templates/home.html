@@ -36,6 +36,7 @@ Cloud-Pcap
 								<th>Type</th>
 								<th># Packets</th>
 								<th>Size (KB)</th>
+								<th>User</th>
 								<th></th>
 							</tr>
 							{% for traceFile in traceFiles %}
@@ -44,6 +45,7 @@ Cloud-Pcap
 									<td>{{ traceFile.filetype }}</td>
 									<td>{{ traceFile.packet_count|format_comma }}</td>
 									<td>{{ ((traceFile.filesize|float) / 1024|float)|format_comma }}</td>
+									<td>{{ traceFile.username.username }}</td>
 									<td><i class='fa fa-close text-danger deleteButton' data-toggle="modal" data-target="#deleteModal" data-id="{{traceFile.id}}" data-name="{{traceFile.name}}"></i></td>
 								</tr>
 							{% endfor %}

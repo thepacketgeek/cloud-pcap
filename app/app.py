@@ -18,21 +18,13 @@ from pcap_helper import get_capture_count, decode_capture_file_summary, get_pack
 
 basedir = os.path.abspath(os.path.dirname(__file__))
 
-class Config:
-    SQLALCHEMY_DATABASE_URI = 'postgresql://localhost/cloud-pcap'
-    # SQLALCHEMY_DATABASE_URI = 'sqlite:///' + os.path.join(basedir, 'db.sqlite')
-    SQLALCHEMY_COMMIT_ON_TEARDOWN = True
-    SECRET_KEY = 'yCt2CTTsLHvL#BG6'
-
-config = Config
-
 ## app setup
 app = Flask(__name__)
 manager = Manager(app)
 bootstrap = Bootstrap(app)
 
 app.jinja_env.add_extension("chartkick.ext.charts")
-app.config.from_object(config)
+app.config.from_object(os.environ['APP_SETTINGS'])
 ALLOWED_EXTENSIONS = ['pcap','pcapng','cap']
 UPLOAD_FOLDER = os.path.join(basedir, 'static/tracefiles/')
 

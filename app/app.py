@@ -353,16 +353,24 @@ def api_upload_file(token):
     except NoResultFound:
         return json.dumps({"status":404,"exceptions":["API Token is missing or invalid"]}), 404
 
-    traceFile = request.files['file']
-
-    if traceFile and allowed_file(traceFile.filename):
-
-        filetype = splitext(traceFile.filename)[1].strip('.')
+    if request.method == 'POST':
+        traceFile = request.files['file']
+        filename = traceFile.filename
+        filetype = splitext(filename)[1].strip('.')
         uuid_filename = '.'.join([str(uuid.uuid4()),filetype])
         traceFile.save(os.path.join(UPLOAD_FOLDER, uuid_filename))
-        
+
+    else:
+        filename = request.args.get('filename')
+        filetype = splitext(filename)[1].strip('.')
+        uuid_filename = '.'.join([str(uuid.uuid4()),filetype])
+        with open(os.path.join(UPLOAD_FOLDER, uuid_filename), 'w') as f:
+            f.write(request.stream.read())
+
+    if allowed_file(filename):
+
         new_file = TraceFile(id=str(uuid.uuid4())[:8],
-            name=secure_filename(splitext(traceFile.filename)[0]),
+            name=secure_filename(splitext(filename)[0]),
             user_id = user.id,
             filename = uuid_filename,
             filetype = filetype,
@@ -382,14 +390,12 @@ def api_upload_file(token):
 
         db.session.commit()
 
-        log('info','File uploaded by \'%s\': %s.' % (user.username, traceFile.filename))
-        return json.dumps({"filename": traceFile.name,"id":new_file.id}), 202
+        log('info','File uploaded by \'%s\': %s.' % (user.username, filename))
+        return json.dumps({"filename": filename,"id":new_file.id}), 202
 
     else:
+        os.remove(os.path.join(UPLOAD_FOLDER, uuid_filename))
         return json.dumps({"status":406,"exceptions":["Not a valid file type. (pcap, pcapng, cap)"]}), 406
-
-    # else: 
-    #     return 'Upload Files to this path.'
 
 @app.route('/captures/upload')
 @login_required

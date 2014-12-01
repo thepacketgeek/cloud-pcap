@@ -40,14 +40,18 @@ def decode_capture_file_summary(traceFile, display_filter=None):
 		pkt_details = {
 			'number' : packet.no,
 			'length' : packet.length,
-			'time' : packet.time,
-			'delta' : packet.delta,
+			'time' : packet.time
 		}
 		pkt_details['src_ip'] = packet.source
 		pkt_details['dst_ip'] = packet.destination
 		pkt_details['protocol'] = packet.protocol
-
 		pkt_details['desc'] = packet.info
+		
+		try:
+			pkt_details['delta'] = packet.delta
+		except AttributeError:
+			pkt_details['delta'] = '---'
+
 
 		details['packets'].append(pkt_details)
 		avg_length.append(int(packet.length))

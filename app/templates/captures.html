@@ -66,7 +66,7 @@ Captures - {{ traceFile.name }}
 					  <input id="display-filter" class="form" placeholder="Display Filter"></input>
 				  </div>
 			  </div>
-			  <div class="panel-body">
+			  <div class="panel-body splitter">
 		{% if details %}
 
 				<div class="packetList">
@@ -159,6 +159,7 @@ Captures - {{ traceFile.name }}
 
 <script src="{{ url_for('static', filename='bootstrap-tagsinput.min.js') }}"></script>
 <script src="{{ url_for('static', filename='bootstrap3-typeahead.min.js') }}"></script>
+<script src="{{ url_for('static', filename='jquery.splitter-0.14.0.js') }}"></script>
 
 <script type="text/javascript">
 
@@ -173,6 +174,12 @@ Captures - {{ traceFile.name }}
 		});
 
 		$('.bootstrap-tagsinput').prepend('<i class="fa fa-tags"></i>');
+
+		$('.splitter').css({height: '100%', width: '100%'}).split({
+		    orientation: 'horizontal',
+		    limit: 2,
+		    position: '50%'
+		});
 
 		$('input#tags').on('itemAdded itemRemoved', function(event) {
 	   		event.preventDefault();

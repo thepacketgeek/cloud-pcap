@@ -101,12 +101,12 @@ def get_packet_detail(traceFile, number):
 			detail += '''<div class="panel panel-default">
 						  <div class="panel-heading" role="tab" id="headingOne">
 						    <h4 class="panel-title">
-						      <a data-toggle="collapse" href="#%(link)s" aria-expanded="true" aria-controls="%(name)s">
+						      <a class="packetHeader" data-toggle="collapse" data-target="#%(link)s" aria-expanded="false">
 						        %(name)s
 						      </a>
 						    </h4>
 						  </div>
-						  <div id="%(link)s" class="panel-collapse collapse in" role="tabpanel" aria-labelledby="headingOne">
+						  <div id="%(link)s" class="panel-collapse collapse" aria-expanded="false">
 						    <div class="panel-body">
 
 			''' % {'name': line[:-1], 'link': line.replace(' ', '-').strip(':')}
@@ -117,12 +117,12 @@ def get_packet_detail(traceFile, number):
 						<div class="panel panel-default">
 						  <div class="panel-heading" role="tab" id="headingOne">
 						    <h4 class="panel-title">
-						      <a class="collapsed" data-toggle="collapse" href="#%(link)s" aria-expanded="true" aria-controls="%(name)s">
+						      <a class="packetHeader" data-toggle="collapse" data-target="#%(link)s">
 						        %(name)s
 						      </a>
 						    </h4>
 						  </div>
-						  <div id="%(link)s" class="panel-collapse collapse" role="tabpanel" aria-labelledby="headingOne">
+						  <div id="%(link)s" class="panel-collapse collapse" aria-expanded="false">
 						    <div class="panel-body">
 
 			''' % {'name': line[:-1], 'link': line.replace(' ', '-').strip(':')}

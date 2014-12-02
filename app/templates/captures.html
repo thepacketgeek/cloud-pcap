@@ -25,7 +25,7 @@ Captures - {{ traceFile.name }}
 		<div class="row">
 			<div class="panel panel-default">
 					<div class="panel-heading packetTitle">
-						<div class="col-md-3">
+						<div class="col-md-4">
 							<span class="filename">
 								<span>{{ traceFile.name }}</span>.{{ traceFile.filetype }}
 								<a id="editName"><i class="fa fa-pencil-square-o"></i></a>
@@ -47,7 +47,7 @@ Captures - {{ traceFile.name }}
 							</a>
 						</div>
 
-						<div class="col-md-5 pull-right">
+						<div class="col-md-4 pull-right">
 					        {{ wtf.form_field(form.tags, class="", **{'data-role':'tagsinput', 'data-provide':'typeahead'}) }}
 				     	</div>
 					</div>
@@ -103,10 +103,7 @@ Captures - {{ traceFile.name }}
 			  	</div>	
 		  	</div>	
 		</div>
-		{% else %}
-			</div>
-		</div>
-		{% endif %}
+		
 
 
 			<!-- Packet Stats Modal -->
@@ -114,7 +111,7 @@ Captures - {{ traceFile.name }}
 			  <div class="modal-dialog modal-lg">
 			    <div class="modal-content">
 			      <div class="modal-header">
-			        
+			        <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
 			        <h4 class="modal-title">Packet Stats</h4>
 			      </div>
 			      <div class="modal-body">
@@ -141,14 +138,18 @@ Captures - {{ traceFile.name }}
 
 			      </div>
 			      <div class="modal-footer">
-			        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
 			      </div>
 			        </form>
 			    </div><!-- /.modal-content -->
 			  </div><!-- /.modal-dialog -->
 			</div><!-- /.modal -->
+		{% else %}
+			</div>
+		</div>
+		{% endif %}
 	</div>
 </div>
+
 
 
 {% endblock %}
@@ -277,7 +278,7 @@ Captures - {{ traceFile.name }}
 
 		$(".bootstrap-tagsinput input").typeahead({ source:tag_list, confirmKeys: [13, 44] });
 
-		$('.collapse').collapse();
+		// $('.collapse').collapse();
 	});
 </script>
 {% endblock %}

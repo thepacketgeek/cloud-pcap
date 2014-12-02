@@ -98,7 +98,7 @@ Captures - {{ traceFile.name }}
 				</div>
 			  	<div class="packetView">
 			  		<div class="spinner text-center hide"><i class="fa fa-spinner fa-spin fa-2x"></i></div>
-			  		<div class="packetPane" id="accordion" role="tablist" aria-multiselectable="true">
+			  		<div class="packetPane">
 			  		</div>
 			  	</div>	
 		  	</div>	
@@ -244,6 +244,14 @@ Captures - {{ traceFile.name }}
 	   			success: function(text){
 			   		$('.spinner').addClass('hide');
 			   		packetPane.html(text);
+		   		   
+		   		   $('a.packetHeader').on('click', function(e){
+		   			   	// e.preventDefault();
+		   			   	var panel = $(this).data('target');
+		   			   	$(panel).toggleClass('collapse');
+		   			   	$(this).children('i').toggleClass('fa-rotate-90');
+
+		   		   });
 			   	}
 
 	   		});
@@ -280,13 +288,11 @@ Captures - {{ traceFile.name }}
 
 	   $('#clear-filter').on('click', function(e){
 	   		e.preventDefault();
-	   		console.log('clear filter clicked: '+ window.location.pathname.split('?')[0]);
 	   		window.location.href= window.location.pathname.split('?')[0];
 	   });
 
 		$(".bootstrap-tagsinput input").typeahead({ source:tag_list, confirmKeys: [13, 44] });
 
-		// $('.collapse').collapse();
 	});
 </script>
 {% endblock %}

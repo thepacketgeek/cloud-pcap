@@ -99,14 +99,15 @@ def get_packet_detail(traceFile, number):
 			continue
 		elif 'Layer ETH' in line:
 			detail += '''<div class="panel panel-default">
-						  <div class="panel-heading" role="tab" id="headingOne">
+						  <div class="panel-heading" role="tab">
 						    <h4 class="panel-title">
-						      <a class="packetHeader" data-toggle="collapse" data-target="#%(link)s" aria-expanded="false">
+						      <a class="packetHeader" data-target="#%(link)s">
+						        <i class="fa fa-caret-right fa-rotate-90"></i>
 						        %(name)s
 						      </a>
 						    </h4>
 						  </div>
-						  <div id="%(link)s" class="panel-collapse collapse" aria-expanded="false">
+						  <div id="%(link)s" class="panel-collapse">
 						    <div class="panel-body">
 
 			''' % {'name': line[:-1], 'link': line.replace(' ', '-').strip(':')}
@@ -115,14 +116,15 @@ def get_packet_detail(traceFile, number):
 						  </div>
 						</div>
 						<div class="panel panel-default">
-						  <div class="panel-heading" role="tab" id="headingOne">
+						  <div class="panel-heading" role="tab">
 						    <h4 class="panel-title">
-						      <a class="packetHeader" data-toggle="collapse" data-target="#%(link)s">
+						      <a class="packetHeader" data-target="#%(link)s">
+						        <i class="fa fa-caret-right"></i>
 						        %(name)s
 						      </a>
 						    </h4>
 						  </div>
-						  <div id="%(link)s" class="panel-collapse collapse" aria-expanded="false">
+						  <div id="%(link)s" class="panel-collapse collapse">
 						    <div class="panel-body">
 
 			''' % {'name': line[:-1], 'link': line.replace(' ', '-').strip(':')}

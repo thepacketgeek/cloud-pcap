@@ -135,8 +135,6 @@ i.fa-tags {
 
 .packetList {
 	font-size: 85%;
-	/*max-height: 300px;*/
-	overflow: auto;
 	overflow-y: auto;
 }
 
@@ -155,6 +153,7 @@ i.fa-tags {
 
 .packets .panel-body {
 	padding: 0;
+	padding-left: 10px;
 }
 
 .packetPane .panel-heading, .packetPane .panel-heading {

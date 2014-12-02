@@ -258,20 +258,22 @@ Captures - {{ traceFile.name }}
 
 	   });
 
-	   function getUrlVars()
+	   $('a.filter-stream').on('click', function(e){
+	   		window.location.href= window.location.pathname + '?display_filter=' + $(this).data('filter');
+	   });
+
+	   function getDisplayFilter()
 	   {
-	       var vars = [], hash;
-	       var hashes = window.location.href.slice(window.location.href.indexOf('?') + 1).split('&');
-	       for(var i = 0; i < hashes.length; i++)
-	       {
-	           hash = hashes[i].split('=');
-	           vars.push(hash[0]);
-	           vars[hash[0]] = hash[1];
+	       var qstrings = window.location.href.slice(window.location.href.indexOf('?') + 1).split('&');
+	       for (var i = 0; i < qstrings.length; i++) {
+	       	if (qstrings[i].indexOf('display_filter') >= 0){
+		       var filter = qstrings[i].replace('display_filter=', '');
+		       return filter;
+	       	}
 	       }
-	       return vars;
 	   }
 
-	   var display_filter = decodeURIComponent(getUrlVars()["display_filter"]);
+	   var display_filter = decodeURIComponent(getDisplayFilter());
 
 	   if (display_filter != 'undefined') {
 	   	  $('input#display-filter').val(display_filter);

@@ -5,11 +5,11 @@
 
 <title>{% block title %}{% endblock %} - Sub Reach</title> 
 <link rel="shortcut icon" href="{{ url_for('static', filename='favicon.ico') }}">
-<script src="http://cdnjs.cloudflare.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
+<script src="//cdnjs.cloudflare.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
 <!-- <script src="{{ url_for('static', filename='jquery.min.js') }}"></script> -->
 <!-- <script src="{{ url_for('static', filename='bootstrap.min.js') }}"></script> -->
 <script src="//maxcdn.bootstrapcdn.com/bootstrap/3.3.0/js/bootstrap.min.js"></script>
-<script src="http://cdnjs.cloudflare.com/ajax/libs/highcharts/4.0.4/highcharts.js"></script>
+<script src="//cdnjs.cloudflare.com/ajax/libs/highcharts/4.0.4/highcharts.js"></script>
 <!-- <script src="{{ url_for('static', filename='highcharts.js') }}"></script> -->
 <script src="{{ url_for('static', filename='chartkick.js') }}"></script>
 
@@ -19,11 +19,11 @@
 
 {% block styles %}
 {{ super() }}
-<!-- <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='bootstrap.min.css', _external=True) }}"> -->
+<!-- <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='bootstrap.min.css') }}"> -->
 <link href="//maxcdn.bootstrapcdn.com/bootstrap/3.3.0/css/bootstrap.min.css" rel="stylesheet">
-<link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='bootstrap-tagsinput.css', _external=True) }}">
-<link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/dropzone.css', _external=True) }}">
-<link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='style.css', _external=True) }}">
+<link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='bootstrap-tagsinput.css') }}">
+<link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/dropzone.css') }}">
+<link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='style.css') }}">
 <!-- <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='font-awesome.min.css') }}"> -->
 <link href="//maxcdn.bootstrapcdn.com/font-awesome/4.2.0/css/font-awesome.min.css" rel="stylesheet">
 {% endblock %}

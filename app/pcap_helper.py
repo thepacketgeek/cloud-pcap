@@ -47,11 +47,12 @@ def decode_capture_file_summary(traceFile, display_filter=None):
 		pkt_details['protocol'] = packet.protocol
 		pkt_details['desc'] = packet.info
 		
+		# delta and stream aren't supported by earlier versions (1.99.1) of tshark
 		try:
 			pkt_details['delta'] = packet.delta
+			pkt_details['stream'] = packet.stream
 		except AttributeError:
-			pkt_details['delta'] = '---'
-
+			pass
 
 		details['packets'].append(pkt_details)
 		avg_length.append(int(packet.length))

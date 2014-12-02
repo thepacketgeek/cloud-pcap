@@ -82,18 +82,26 @@ Captures - {{ traceFile.name }}
 						  	<!-- <th>Length</th> -->
 					  	</tr></thead>
 
+					  	<tbody>
 				  		{% for packet in details['packets'] %}
-				  		<tr><tbody>
+					  		{% if packet.protocol == 'HTTP' %}<tr class="success">
+					  		{% elif packet.protocol == 'TCP' %}<tr class="info">
+					  		{% elif packet.protocol == 'UDP' %}<tr class="warning">
+					  		{% else %}<tr>
+					  		{% endif %}
 				  				<td class="number">{{ packet.number }}</td>
 				  				<td>{{ packet.time }}</td>
 				  				<td>{{ packet.delta }}</td>
 				  			  	<td>{{ packet.src_ip}} </td>
 				  			  	<td>{{ packet.dst_ip }} </td> <!-- <small class="pull-right text-muted">({{ packet.dst_port }}) </small> -->
-				  			  	<td>{{ packet.protocol }}</td>
+				  			  	<td>{{ packet.protocol }} 
+				  			  		{% if packet.stream %}<a class="filter-stream pull-right" data-filter="tcp.stream == {{ packet.stream }}" title="Follow Stream ({{ packet.stream }})"><i class="fa fa-space-shuttle"></i></a>{% endif %}
+				  			  	</td>
 				  			  	<td style="max-width: 200px;white-space:nowrap; overflow: hidden;">{{ packet.desc }}</td>
 				  			  	<!-- <td>{{ packet.length }}</td> -->
-				  		</tr></tbody>
+					  		</tr>
 				  		{% endfor %}
+				  		</tbody>
 				  	</table>
 				</div>
 			  	<div class="packetView">

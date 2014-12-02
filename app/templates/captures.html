@@ -23,64 +23,61 @@ Captures - {{ traceFile.name }}
 		<br/>
 
 		<div class="row">
-			<div class="panel panel-default">
-					<div class="panel-heading packetTitle">
-						<div class="col-md-4">
-							<span class="filename">
-								<span>{{ traceFile.name }}</span>.{{ traceFile.filetype }}
-								<a id="editName"><i class="fa fa-pencil-square-o"></i></a>
-							</span>
-							<span class="editname hide">
-								<input class="form filename "/>.{{ traceFile.filetype }}
-								<a id="saveName"><i class="fa fa-floppy-o"> </i></a>
-							</span>
-						</div>
-
-
-						<div class="col-md-3 text-center">
-							<small class=""> ({{ traceFile.packet_count }} packets, {{ ((traceFile.filesize|float) / 1024.0)|format_comma}} KBytes)</small>
-							<a href="#" id="packetStats" data-toggle="modal", data-target="#packetStatsModal"> 
-								<i class="fa fa-bar-chart fa-2x pull-right" style="margin-top: -3px;"></i> 
-							</a>
-							<a href="{{ url_for('download_file', file_id=traceFile.id, attachment_name='%s.%s' % (traceFile.name, traceFile.filetype)) }}">
-							<i class="fa fa-download pull-right fa-2x" style="margin-top: -3px;"></i>
-							</a>
-						</div>
-
-						<div class="col-md-4 pull-right">
-					        {{ wtf.form_field(form.tags, class="", **{'data-role':'tagsinput', 'data-provide':'typeahead'}) }}
-				     	</div>
+			<div id="custom-toolbar">
+		    	<div class="row">
+			    	 <div class="col-md-4">
+			    	  	<span class="filename">
+							<span>{{ traceFile.name }}</span>.{{ traceFile.filetype }}
+							<a id="editName"><i class="fa fa-pencil-square-o"></i></a>
+						</span>
+						<span class="editname hide">
+							<input class="form filename "/>.{{ traceFile.filetype }}
+							<a id="saveName"><i class="fa fa-floppy-o"> </i></a>
+						</span>
 					</div>
-			
-			</div>
-		</div>
 
-		<div class="row">
+					<div class="col-md-2 captureButtons">
+						
+						<a href="#" id="packetStats" data-toggle="modal", data-target="#packetStatsModal"> 
+							<i class="fa fa-bar-chart fa-2x"></i> 
+						</a>
+						<a href="#" id="tags" data-toggle="modal", data-target="#tagsModal"> 
+							<i class="fa fa-tags fa-2x"></i> 
+						</a>
+						<a href="{{ url_for('download_file', file_id=traceFile.id, attachment_name='%s.%s' % (traceFile.name, traceFile.filetype)) }}">
+							<i class="fa fa-download fa-2x"></i>
+						</a>
+					</div>
+
+					<div class="col-md-6">
+			    	  <a href="#" id="clear-filter"><i  class="fa fa-ban text-danger pull-right"></i></a>
+			    	  <div class="filter-wrapper pull-right">
+			    		  <i class="fa fa-filter"></i>
+			    		  <input id="display-filter" class="form" placeholder="Display Filter"></input>
+			    	  </div>
+			    	  <small class="text-center text-muted pull-right">({{ display_count }} packets displayed) </small>
+				   	</div>
+		    	</div>
+			</div>
 			<div class="panel panel-default packets">
-			  <div class="panel-heading">
-				  Packets
-				  <a href="#" id="clear-filter"><i  class="fa fa-ban text-danger pull-right"></i></a>
-				  <small class="text-center text-muted">({{ display_count }} packets displayed)</small>
-				  <div class="filter-wrapper pull-right">
-					  <i class="fa fa-filter"></i>
-					  <input id="display-filter" class="form" placeholder="Display Filter"></input>
-				  </div>
-			  </div>
+			  
 			  <div class="panel-body splitter">
 		{% if details %}
 
 				<div class="packetList">
-					<table class="table table-condensed table-hover" >
-					  	<thead><tr>
-					  		<th>#</th>
-						  	<th>Time</th>
-						  	<th>Delta</th>
-						  	<th>Source</th> <!-- <small class="pull-right text-muted">(port)</small> -->
-						  	<th>Destination</th>
-						  	<th>Protocol</th>
-						  	<th>Info</th>
-						  	<!-- <th>Length</th> -->
-					  	</tr></thead>
+					<table class="table table-condensed table-hover" data-toolbar="#custom-toolbar" data-height="404.5" data-toggle="table" data-show-columns="true">
+					  	<thead>
+					  		<tr>
+						  		<th data-field="Number">#</th>
+							  	<th data-width="100" data-field="Time">Time</th>
+							  	<th data-width="100" data-field="Delta">Delta</th>
+							  	<th data-width="150" data-field="Source">Source</th> <!-- <small class="pull-right text-muted">(port)</small> -->
+							  	<th data-width="150" data-field="Destination">Destination</th>
+							  	<th data-field="Protocol">Protocol</th>
+							  	<th>Length</th>
+							  	<th data-field="Info">Info</th>
+					  		</tr>
+					  	</thead>
 
 					  	<tbody>
 				  		{% for packet in details['packets'] %}
@@ -97,8 +94,8 @@ Captures - {{ traceFile.name }}
 				  			  	<td>{{ packet.protocol }} 
 				  			  		{% if packet.stream %}<a class="filter-stream pull-right" data-filter="tcp.stream == {{ packet.stream }}" title="Follow Stream ({{ packet.stream }})"><i class="fa fa-space-shuttle"></i></a>{% endif %}
 				  			  	</td>
+				  			  	<td>{{ packet.length }}</td>
 				  			  	<td style="max-width: 200px;white-space:nowrap; overflow: hidden;">{{ packet.desc }}</td>
-				  			  	<!-- <td>{{ packet.length }}</td> -->
 					  		</tr>
 				  		{% endfor %}
 				  		</tbody>
@@ -151,10 +148,26 @@ Captures - {{ traceFile.name }}
 			    </div><!-- /.modal-content -->
 			  </div><!-- /.modal-dialog -->
 			</div><!-- /.modal -->
+
 		{% else %}
 			</div>
 		</div>
 		{% endif %}
+		<!-- Tags Modal -->
+		<div class="modal fade" id="tagsModal">
+		  <div class="modal-dialog">
+		    <div class="modal-content">
+		      <div class="modal-header">
+		        <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+		        <h4 class="modal-title">Tags</h4>
+		      </div>
+		      <div class="modal-body">
+		      	
+		      {{ wtf.form_field(form.tags, class="", **{'data-role':'tagsinput', 'data-provide':'typeahead'}) }}
+		      </div>
+		    </div><!-- /.modal-content -->
+		  </div><!-- /.modal-dialog -->
+		</div><!-- /.modal -->
 	</div>
 </div>
 
@@ -175,7 +188,6 @@ Captures - {{ traceFile.name }}
 
 	$(document).ready(function(){
 
-		// $('.table-hover').fixedHeaderTable();
 		$('a#packetStats').on('click', function(e){
 			e.preventDefault();
 			$('div.packetStats').toggleClass('hide');
@@ -301,7 +313,14 @@ Captures - {{ traceFile.name }}
 	   		window.location.href= window.location.pathname.split('?')[0];
 	   });
 
+	   $('button.dropdown-toggle').dropdown();
 		$(".bootstrap-tagsinput input").typeahead({ source:tag_list, confirmKeys: [13, 44] });
+
+		$('.fixed-table-container').css('height', $('.top_panel').height()-60);
+
+		$(document.body).on('mouseup', function(){
+			$('.fixed-table-container').css('height', $('.top_panel').height()-60);
+		});
 
 	});
 </script>

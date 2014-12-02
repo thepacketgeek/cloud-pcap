@@ -30,7 +30,7 @@ div.content {
 	padding-right: 20px;
 }
 
-.modal-dialog {
+.modal-lg {
     margin-top: 100px;
     width: 90%;
 }
@@ -48,7 +48,7 @@ button a {
 	overflow: hidden;
 }
 
-.packetTitle .form-group .control-label {
+#tagsModal .control-label {
 	display: none;
 }
 
@@ -78,12 +78,14 @@ i.fa-tags {
 .packetStats {
 	z-index: 10;
 }
+
 .panel-heading .fa {
 	padding-top: 3px;
 }
 
 .filter-wrapper {
-	margin-top: -4px;
+	margin-top: 4px;
+	margin-left: 10px;
 	overflow: hidden;
 	height: 85%;
 	background-color: #fff;
@@ -103,6 +105,24 @@ i.fa-tags {
 .filter-wrapper input {
 	border: 0;
 	width: 80%;
+}
+
+#clear-filter i {
+	padding-top: 10px;
+}
+
+.captureButtons { padding-top: 3px;}
+#custom-toolbar {
+	padding-left: 20px;
+	width: 1400px;
+}
+
+.columns-right {
+	margin-right: 10px;
+}
+
+.editname input {
+	width: 60%;
 }
 
 .chart-title {
@@ -127,19 +147,14 @@ i.fa-tags {
 	height: 40px;
 }
 
-.tracefiles {
-	min-height: 350px;
-}
-
 /*########  Packet View  ########*/
 
 .spinner {
 	padding-top: 20px;
 }
 
-.packetList {
+.packetList table {
 	font-size: 85%;
-	overflow-y: auto;
 }
 
 .packetList tbody {
@@ -149,7 +164,7 @@ i.fa-tags {
 .packets {
 	position: fixed;
 	bottom: 0;
-	height: 85%;
+	height: 90%;
 	width: 100%;
 	margin-bottom: 0;
 	margin-left: -15px;

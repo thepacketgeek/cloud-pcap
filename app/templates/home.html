@@ -29,16 +29,19 @@ Cloud-Pcap
 						Trace Files
 						<small class="pull-right">{{ traceFiles|length }} Capture Files</small>
 					</div>
-					<div class="panel-body" >
-						<table class="table tablesorter">
+					<div class="panel-body tracefiles">
+						<table class="" data-toggle="table" data-height="518" data-sort-name="name" data-sort-order="desc" data-show-columns="true" data-pagination="true" data-page-list="[10, 20, 50]" data-search="true">
+							<thead>
 							<tr>
-								<th style="width: 60%">Name</th>
-								<th>Type</th>
-								<th># Packets</th>
-								<th>Size (KB)</th>
-								<th>User</th>
-								<th></th>
+								<th data-field="name" data-sortable="true">Name</th>
+								<th data-field="type" data-sortable="true">Type</th>
+								<th data-field="packets" data-sortable="true"># Packets</th>
+								<th data-field="size" data-sortable="true">Size (KB)</th>
+								<th data-field="user" data-sortable="true">User</th>
+								<th data-field="delete" data-sortable="false" data-switchable="false"></th>
 							</tr>
+							</thead>
+							<tbody>
 							{% for traceFile in traceFiles %}
 								<tr>
 									<td><a href="{{ url_for('captures', file_id=traceFile.id) }}"><i class="fa fa-file"></i> {{ traceFile.name }}</a></td>
@@ -49,6 +52,7 @@ Cloud-Pcap
 									<td><i class='fa fa-close text-danger deleteButton' data-toggle="modal" data-target="#deleteModal" data-id="{{traceFile.id}}" data-name="{{traceFile.name}}"></i></td>
 								</tr>
 							{% endfor %}
+							</tbody>
 						</table>
 					</div>
 				</div>
@@ -57,7 +61,7 @@ Cloud-Pcap
 				<div class="panel panel-default" >
 					<div class="panel-heading">Tags
 
-						<a href="{{ url_for('home') }}"><i class="fa fa-ban pull-right"></i></a>
+						<a href="{{ url_for('home') }}"><i class="fa fa-ban text-danger pull-right"></i></a>
 					</div>
 					<div class="panel-body">
 						<ul class="list-group">
@@ -138,7 +142,6 @@ Cloud-Pcap
 {{ super() }}
 
 <script src="{{ url_for('static', filename='dropzone.min.js') }}"></script>
-<script src="{{ url_for('static', filename='jquery.tablesorter.min.js') }}"></script>
 
 <script type="text/javascript">
 	Dropzone.autoDiscover = false;
@@ -174,7 +177,7 @@ Cloud-Pcap
 			  }
 		});
 
-		$('.tablesorter').tablesorter({ sortList: [[0,0]]});
+		$('button.dropdown-toggle').dropdown();
 
 	});
 </script>

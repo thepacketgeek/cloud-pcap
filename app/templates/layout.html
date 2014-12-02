@@ -12,6 +12,7 @@
 <script src="//cdnjs.cloudflare.com/ajax/libs/highcharts/4.0.4/highcharts.js"></script>
 <!-- <script src="{{ url_for('static', filename='highcharts.js') }}"></script> -->
 <script src="{{ url_for('static', filename='chartkick.js') }}"></script>
+<script src="{{ url_for('static', filename='bootstrap-table.min.js') }}"></script>
 
 {% endblock %}
 
@@ -20,6 +21,7 @@
 {% block styles %}
 {{ super() }}
 <link href="//maxcdn.bootstrapcdn.com/bootstrap/3.3.0/css/bootstrap.min.css" rel="stylesheet">
+<link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='bootstrap-table.min.css') }}">
 <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='bootstrap-tagsinput.css') }}">
 <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/dropzone.css') }}">
 <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='style.css') }}">
@@ -78,6 +80,6 @@
 {{ super() }}
 
 <script type="text/javascript">
-	$('.dropdown-toggle').dropdown();
+	$('a.dropdown-toggle').dropdown();
 </script>
 {% endblock %}

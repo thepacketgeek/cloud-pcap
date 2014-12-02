@@ -71,14 +71,7 @@ Cloud-Pcap
 			</div>
 		</div>
 
-		<div class="row dropzone-previews text-center">
-			<h4 class="">Drag photos into window or  
-			  <button class="btn btn-default start dropzone-label">
-		          <i class="fa fa-upload"></i>
-		          <span>Upload</span>
-		      </button>
-		    </h4>
-		</div>
+		
 
 		<!-- Temp Password Modal -->
 		<div class="modal fade" id="tempPasswordModal">
@@ -128,7 +121,16 @@ Cloud-Pcap
 		
 	</div>
 </div>
-
+<div class="dropzone-previews text-center">
+	<div class="well">
+	<h4 class="">Drag photos here or  
+	  <button class="btn btn-default start dropzone-label">
+          <i class="fa fa-upload"></i>
+          <span>Upload</span>
+      </button>
+      </div>
+    </h4>
+</div>
 
 {% endblock %}
 
@@ -160,7 +162,7 @@ Cloud-Pcap
 			$('#confirmDelete').attr('href', 'captures/delete/' + file_id);
 		});
 
-		var captureUpload = new Dropzone(document.body, {
+		var captureUpload = new Dropzone('.dropzone-previews', {
 			url: "{{ url_for('api_upload_file', token=current_user.token) }}",
 			previewsContainer: ".dropzone-previews",
 			clickable: '.dropzone-label',

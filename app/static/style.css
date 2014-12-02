@@ -66,9 +66,13 @@ i.fa-tags {
 .dropzone-previews {
     position: fixed;
     bottom: 0;
-    height: 40px;
+    height: 62px;
     width: 100%;
     font-size: 12px;
+}
+
+.dropzone-previews .well {
+	padding-top: 3px;
 }
 
 .packetStats {

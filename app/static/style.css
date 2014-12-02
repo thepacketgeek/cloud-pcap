@@ -123,6 +123,10 @@ i.fa-tags {
 	height: 40px;
 }
 
+.tracefiles {
+	min-height: 350px;
+}
+
 /*########  Packet View  ########*/
 
 .spinner {
@@ -131,32 +135,19 @@ i.fa-tags {
 
 .packetList {
 	font-size: 85%;
-	max-height: 300px;
+	/*max-height: 300px;*/
 	overflow: auto;
 	overflow-y: auto;
 }
 
-.packetList thead {
-	/*position: relative;*/
-	/*height: 30px;*/
-}
 .packetList tbody {
 	margin-top: -5px;
-}
-
-.packetList {
-	/*max-height: 40%;*/
-	padding-bottom: 420px;
-}
-
-.tracefiles {
-	min-height: 350px;
 }
 
 .packets {
 	position: fixed;
 	bottom: 0;
-	min-height: 80%;
+	height: 85%;
 	width: 100%;
 	margin-bottom: 0;
 	margin-left: -15px;
@@ -164,16 +155,6 @@ i.fa-tags {
 
 .packets .panel-body {
 	padding: 0;
-}
-.packetView {
-	position: fixed;
-	background-color: #fff;
-	overflow: auto;
-	border-top: 1px solid #bbb;
-	min-height: 400px;
-	max-height: 400px;
-	bottom: 0;
-	width: 100%;
 }
 
 .packetPane .panel-heading, .packetPane .panel-heading {

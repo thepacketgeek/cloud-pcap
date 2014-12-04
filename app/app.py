@@ -422,8 +422,8 @@ def api_delete_file(token, file_id):
 
 
     if token == user.token:
-        TraceFile.query.filter_by(id=file_id).delete()
         Tag.query.filter_by(file_id=file_id).delete()
+        TraceFile.query.filter_by(id=file_id).delete()
 
         db.session.commit()
 

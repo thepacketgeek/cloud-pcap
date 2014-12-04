@@ -385,8 +385,9 @@ def api_upload_file(token):
         #add tags
         if request.form.getlist('additional_tags'):
             for tag in request.form.getlist('additional_tags')[0].split(','):
-                new_tag = Tag(name = tag.strip(','), file_id=new_file.id)
-                db.session.add(new_tag)
+                if tag.strip(',') != '':
+                    new_tag = Tag(name = tag.strip(','), file_id=new_file.id)
+                    db.session.add(new_tag)
 
         db.session.commit()
 

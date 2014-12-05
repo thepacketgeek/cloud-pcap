@@ -30,13 +30,14 @@ Cloud-Pcap
 						<small class="pull-right">{{ traceFiles|length }} Capture Files</small>
 					</div>
 					<div class="panel-body tracefiles">
-						<table class="" data-toggle="table" data-height="518" data-sort-name="name" data-sort-order="desc" data-show-columns="true" data-pagination="true" data-page-list="[10, 20, 50]" data-search="true">
+						<table class="" data-toggle="table" data-height="518" data-sort-name="date" data-sort-order="desc" data-show-columns="true" data-pagination="true" data-page-list="[10, 20, 50]" data-search="true">
 							<thead>
 							<tr>
 								<th data-field="name" data-sortable="true">Name</th>
 								<th data-field="type" data-sortable="true">Type</th>
 								<th data-field="packets" data-sortable="true"># Packets</th>
 								<th data-field="size" data-sortable="true">Size (KB)</th>
+								<th data-field="date" data-sortable="true">Added</th>
 								<th data-field="user" data-sortable="true">User</th>
 								<th data-field="delete" data-sortable="false" data-switchable="false"></th>
 							</tr>
@@ -48,6 +49,7 @@ Cloud-Pcap
 									<td>{{ traceFile.filetype }}</td>
 									<td>{{ traceFile.packet_count|format_comma }}</td>
 									<td>{{ ((traceFile.filesize|float) / 1024|float)|format_comma }}</td>
+									<td>{{ traceFile.date_added.strftime('%b %d, %Y %I:%M%p') }}</td>
 									<td>{{ traceFile.username.username }}</td>
 									<td><i class='fa fa-close text-danger deleteButton' data-toggle="modal" data-target="#deleteModal" data-id="{{traceFile.id}}" data-name="{{traceFile.name}}"></i></td>
 								</tr>

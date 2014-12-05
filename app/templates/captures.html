@@ -137,6 +137,8 @@ Captures - {{ traceFile.name }}
 			      			  <dd>{{ traceFile.filesize|format_comma }} Bytes</dd>
 			      			  <dt>Average Packet Length</dt>
 			      			  <dd>{{ details['stats']['avg_length'] }} Bytes</dd>
+			      			  <dt>Date Added</dt>
+			      			  <dd>{{ traceFile.date_added.strftime('%b %d, %Y %I:%M%p') }}</dd>
 			      			</dl>
 			      		</div>
 			      	</div>

@@ -85,6 +85,7 @@ class TraceFile(db.Model):
     filesize = db.Column(db.Integer) #Bytes
     filetype = db.Column(db.String(64))
     packet_count = db.Column(db.Integer)
+    date_added = db.Column(db.DateTime)
 
     def __repr__(self):
         return '<TraceFile %r, filename: %r>\n' % (self.name, self.filename)
@@ -375,7 +376,8 @@ def api_upload_file(token):
             filename = uuid_filename,
             filetype = filetype,
             filesize = os.path.getsize(os.path.join(UPLOAD_FOLDER, uuid_filename)),
-            packet_count = get_capture_count(uuid_filename)
+            packet_count = get_capture_count(uuid_filename),
+            date_added = datetime.datetime.now()
             )
 
         db.session.add(new_file)

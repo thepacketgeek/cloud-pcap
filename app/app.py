@@ -1,6 +1,6 @@
 import os, datetime, time, random, json, uuid, chartkick, base64, hashlib
 from os.path import splitext
-from flask import redirect, render_template, url_for, flash, request, Flask, send_file
+from flask import redirect, render_template, url_for, flash, request, Flask, send_file, jsonify
 from flask.ext.sqlalchemy import SQLAlchemy
 from sqlalchemy import desc
 from sqlalchemy.exc import IntegrityError, ProgrammingError
@@ -11,7 +11,8 @@ from flask.ext.login import LoginManager, login_required, login_user, UserMixin,
 from werkzeug import secure_filename
 from werkzeug.security import generate_password_hash, check_password_hash
 import config
-from forms import LoginForm, EditTags, ProfileForm, AddUser, EditUser, TempPasswordForm
+from sanicap import sanitize
+from forms import LoginForm, EditTags, ProfileForm, AddUser, EditUser, TempPasswordForm, SanitizeForm
 from flask.ext.migrate import Migrate, MigrateCommand
 from pcap_helper import get_capture_count, decode_capture_file_summary, get_packet_detail
 
@@ -200,26 +201,27 @@ def home():
 @login_required
 def captures(file_id):
 
-    form = EditTags()
+    tagsForm = EditTags(prefix='tags')
+    sanitizeForm = SanitizeForm(prefix='sanitize')
 
     display_filter = request.args.get('display_filter')
 
     traceFile = TraceFile.query.get_or_404(file_id)
 
     try:
-        form.tags.data = ', '.join(x.name for x in Tag.query.filter_by(file_id=file_id).all())
+        tagsForm.tags.data = ', '.join(x.name for x in Tag.query.filter_by(file_id=file_id).all())
     except NoResultFound:
-        form.tags.data = ''
+        tagsForm.tags.data = ''
 
     display_count, details = decode_capture_file_summary(traceFile, display_filter)
 
     if isinstance(details, basestring):
         flash(details, 'warning')
-        return render_template('captures.html', traceFile=traceFile, form=form, display_count=display_count)
+        return render_template('captures.html', traceFile=traceFile, tagsForm=tagsForm, sanitizeForm=sanitizeForm, display_count=display_count)
     
     tags = set([x.name for x in Tag.query.all()])
 
-    return render_template('captures.html', traceFile=traceFile, form=form, display_count=display_count, details=details, tags=tags)
+    return render_template('captures.html', traceFile=traceFile, tagsForm=tagsForm, sanitizeForm=sanitizeForm, display_count=display_count, details=details, tags=tags)
 
 
 @app.route('/captures/<file_id>/packetDetail/<int:number>')
@@ -229,6 +231,57 @@ def packet_detail(file_id, number):
 
     return get_packet_detail(traceFile, number), 200
 
+@app.route('/captures/<file_id>/sanitize', methods=['POST'])
+@login_required
+def sanitize_packet(file_id):
+
+    data = json.loads(request.data)
+    
+    traceFile = TraceFile.query.get_or_404(file_id)
+
+    timestamp = datetime.datetime.now().strftime('%y%m%d-%H%m%S')
+    uuid_filename = '.'.join([str(uuid.uuid4()),traceFile.filetype])
+    
+    print data['sequential']
+
+    try:
+        sanitize(filepath_in = os.path.join(UPLOAD_FOLDER, traceFile.filename), 
+            filepath_out = os.path.join(UPLOAD_FOLDER, uuid_filename),
+            sequential= data['sequential'],
+            ipv4_mask= int([0, data['ipv4_mask']][len(data['ipv4_mask']) > 0]),
+            ipv6_mask= int([0, data['ipv6_mask']][len(data['ipv6_mask']) > 0]),
+            mac_mask=    int([0, data['mac_mask']][len(data['mac_mask']) > 0]),
+            start_ipv4= ['10.0.0.1', data['start_ipv4']][len(data['start_ipv4']) > 0],
+            start_ipv6= ['2001:aa::1', data['start_ipv6']][len(data['start_ipv6']) > 0],
+            start_mac=  ['00:aa:00:00:00:00', data['start_mac']][len(data['start_mac']) > 0]
+            )
+    except Exception as e:
+        flash('Sanitizing - %s: %s.%s' % (e.message, traceFile.name, traceFile.filetype), 'danger')
+        log('error', 'Sanitizing - %s: %s.%s' % (e.message, traceFile.name, traceFile.filetype))
+
+    new_file = TraceFile(id=str(uuid.uuid4())[:8],
+        name=secure_filename(traceFile.name + '_sanitized_' + timestamp),
+        user_id = current_user.id,
+        filename = uuid_filename,
+        filetype = traceFile.filetype,
+        filesize = os.path.getsize(os.path.join(UPLOAD_FOLDER, uuid_filename)),
+        packet_count = get_capture_count(uuid_filename),
+        date_added = datetime.datetime.now()
+        )
+
+
+    db.session.add(new_file)
+    db.session.commit()
+    db.session.refresh(new_file)
+
+    new_tag = Tag(name='Sanitized', file_id=new_file.id)
+    db.session.add(new_tag)
+    db.session.commit()
+
+    flash('File sanitized: %s.%s' % (new_file.name, traceFile.filetype) , 'success')
+    log('info','File sanitized by \'%s\': %s.' % (current_user.username, new_file.name))
+
+    return jsonify({'Result': 'Success'}), 200
 
 @app.route('/users/', methods=['GET', 'POST'])
 @login_required

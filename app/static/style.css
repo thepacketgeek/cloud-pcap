@@ -40,6 +40,10 @@ button a {
 	text-decoration: none;
 }
 
+.modal button a:hover {
+	color: #fff;
+}
+
 /*########  Tag/Typeahead Layout ########*/
 
 .bootstrap-tagsinput {

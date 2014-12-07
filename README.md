@@ -15,6 +15,10 @@ A charmingly pathetic knock-off of cloudshark.org that I use for simple cloud pc
     * [Display Filters](http://wiki.wireshark.org/DisplayFilters)
     * Packet header list
     * Click a packet to see more details 
+* Capture Sanitization
+    * Sanitize pcaps before sharing them
+    * Random or Sequential addresses
+    * Address masking and start address definition
 
 ## Installation/Running
 

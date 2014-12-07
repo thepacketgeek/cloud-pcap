@@ -43,7 +43,6 @@ paramiko==1.12.2
 psycopg2==2.5.4
 py==1.4.26
 pycrypto==2.6.1
-pylibpcap==0.6.4
 pyshark==0.3.3
 python-dateutil==2.2
 requests==2.3.0

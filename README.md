@@ -18,19 +18,32 @@ A charmingly pathetic knock-off of cloudshark.org that I use for simple cloud pc
 
 ## Installation/Running
 
+### Pre-requisites
+- Docker/Docker-compose
+
+### Config File
+Create a `app/config.py` file, E.g.:
+```python
+#!/usr/bin/env python3
+
+class Config:
+    SQLALCHEMY_COMMIT_ON_TEARDOWN = True
+    SECRET_KEY = "REPLACE_ME"
+    SQLALCHEMY_DATABASE_URI = "postgresql://postgres:postgrespswd@db:5432/cloud_pcap"
+
+```
+
+### Installation Steps
+
 * `$ git clone https://github.com/thepacketgeek/cloud-pcap.git`
-* Install PostgreSQL and create an empty database
-	* Put psql path in config.py DevelopmentConfig() class
-	* `$ export APP_SETTINGS="config.DevelopmentConfig"`
-* `$ cd cloud-pcap`
-* `$ pip install -r requirements.txt`
-* `$ cd app`
-* `$ mkdir static/tracefiles`
-* `$ python app.py shell`
-    * `>>> init_db`
-    * `>>> db.session.commit()`
+* `$ cd cloud_pcap`
+* `$ docker-compose up --build`
+* `$ docker-compose run app flask shell`
+    ```
+    >>> init_db()
+    >>> quit()
+    ```
    	* Default user admin/cloudpcap is now setup
-* `$ python app.py runserver`
 
 ## Screenshots
 
@@ -50,6 +63,7 @@ A charmingly pathetic knock-off of cloudshark.org that I use for simple cloud pc
 
 ## Built With...
 
+* [Docker](http://docker.com)
 * [Flask](http://flask.pocoo.org)
 * [Flask-Bootstrap](http://pythonhosted.org/Flask-Bootstrap/)
 * [PyShark](http://kiminewt.github.io/pyshark/)

@@ -36,25 +36,26 @@ from flask_login import (
 from sqlalchemy import desc
 from sqlalchemy.exc import IntegrityError, ProgrammingError
 from sqlalchemy.orm.exc import NoResultFound
-from werkzeug import secure_filename
+from werkzeug.utils import secure_filename
 from werkzeug.security import generate_password_hash, check_password_hash
 
-import config
-from forms import LoginForm, EditTags, ProfileForm, AddUser, EditUser, TempPasswordForm
-from pcap_helper import (
+from app import config
+from app.forms import LoginForm, EditTags, ProfileForm, AddUser, EditUser, TempPasswordForm
+from app.pcap_helper import (
     get_capture_count,
     decode_capture_file_summary,
     get_packet_detail,
 )
 
-basedir = os.path.abspath(os.path.dirname(__file__))
+basedir = "/opt/flask-app"
 
 ## app setup
 app = Flask(__name__)
 bootstrap = Bootstrap(app)
 
 app.jinja_env.add_extension("chartkick.ext.charts")
-app.config.from_object(os.environ["APP_SETTINGS"])
+# app.config.from_object(os.environ["APP_SETTINGS"])
+app.config.from_object(config.DevelopmentConfig)
 ALLOWED_EXTENSIONS = ["pcap", "pcapng", "cap"]
 UPLOAD_FOLDER = os.path.join(basedir, "static/tracefiles/")
 
@@ -263,7 +264,7 @@ def captures(file_id):
 
     display_count, details = decode_capture_file_summary(traceFile, display_filter)
 
-    if isinstance(details, basestring):
+    if isinstance(details, str):
         flash(details, "warning")
         return render_template(
             "captures.html",
@@ -425,7 +426,7 @@ def api_upload_file(token):
             ),
             404,
         )
-
+    
     if request.method == "POST":
         traceFile = request.files["file"]
         filename = traceFile.filename
@@ -440,36 +441,7 @@ def api_upload_file(token):
         with open(os.path.join(UPLOAD_FOLDER, uuid_filename), "w") as f:
             f.write(request.stream.read())
 
-    if allowed_file(filename):
-
-        new_file = TraceFile(
-            id=str(uuid.uuid4())[:8],
-            name=secure_filename(splitext(filename)[0]),
-            user_id=user.id,
-            filename=uuid_filename,
-            filetype=filetype,
-            filesize=os.path.getsize(os.path.join(UPLOAD_FOLDER, uuid_filename)),
-            packet_count=get_capture_count(uuid_filename),
-            date_added=datetime.datetime.now(),
-        )
-
-        db.session.add(new_file)
-        db.session.commit()
-        db.session.refresh(new_file)
-
-        # add tags
-        if request.form.getlist("additional_tags"):
-            for tag in request.form.getlist("additional_tags")[0].split(","):
-                if tag.strip(",") != "":
-                    new_tag = Tag(name=tag.strip(","), file_id=new_file.id)
-                    db.session.add(new_tag)
-
-        db.session.commit()
-
-        log("info", "File uploaded by '%s': %s." % (user.username, filename))
-        return json.dumps({"filename": filename, "id": new_file.id}), 202
-
-    else:
+    if not allowed_file(filename):
         os.remove(os.path.join(UPLOAD_FOLDER, uuid_filename))
         return (
             json.dumps(
@@ -480,6 +452,33 @@ def api_upload_file(token):
             ),
             406,
         )
+
+    new_file = TraceFile(
+        id=str(uuid.uuid4())[:8],
+        name=secure_filename(splitext(filename)[0]),
+        user_id=user.id,
+        filename=uuid_filename,
+        filetype=filetype,
+        filesize=os.path.getsize(os.path.join(UPLOAD_FOLDER, uuid_filename)),
+        packet_count=get_capture_count(uuid_filename),
+        date_added=datetime.datetime.now(),
+    )
+
+    db.session.add(new_file)
+    db.session.commit()
+    db.session.refresh(new_file)
+
+    # add tags
+    if request.form.getlist("additional_tags"):
+        for tag in request.form.getlist("additional_tags")[0].split(","):
+            if tag.strip(",") != "":
+                new_tag = Tag(name=tag.strip(","), file_id=new_file.id)
+                db.session.add(new_tag)
+
+    db.session.commit()
+
+    log("info", "File uploaded by '%s': %s." % (user.username, filename))
+    return json.dumps({"filename": filename, "id": new_file.id}), 202
 
 
 @app.route("/captures/upload")
@@ -636,6 +635,7 @@ def schedule_updates():
     log("info", "-------------- App has started --------------")
 
 
+@app.shell_context_processor
 def make_shell_context():
     return dict(
         app=app,
@@ -648,12 +648,5 @@ def make_shell_context():
     )
 
 
-# manager.add_command("shell", Shell(make_context=make_shell_context))
-# manager.add_command("db", MigrateCommand)
-
 if __name__ == "__main__":
-    import pdb
-
-    pdb.set_trace()
-    # app.run(host='0.0.0.0', debug=True, threaded=True)
-    # manager.run()
+    app.run(host='0.0.0.0', debug=True, threaded=True)

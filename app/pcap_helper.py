@@ -7,16 +7,14 @@ from io import StringIO
 
 import pyshark
 
-basedir = os.path.abspath(os.path.dirname(__file__))
+basedir = "/opt/flask-app"
 UPLOAD_FOLDER = os.path.join(basedir, "static/tracefiles/")
 
 
 def get_capture_count(filename: str) -> int:
+    """ Get the packet count for a given pcap filename """
     p = pyshark.FileCapture(
-        os.path.join(UPLOAD_FOLDER, filename),
-        only_summaries=True,
-        keep_packets=False,
-        eventloop=loop,
+        os.path.join(UPLOAD_FOLDER, filename), only_summaries=True, keep_packets=False
     )
     p.load_packets()
     return len(p)

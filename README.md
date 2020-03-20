@@ -29,7 +29,6 @@ Create a `app/config.py` file, E.g.:
 class Config:
     SQLALCHEMY_COMMIT_ON_TEARDOWN = True
     SECRET_KEY = "REPLACE_ME"
-    SQLALCHEMY_DATABASE_URI = "postgresql://postgres:postgrespswd@db:5432/cloud_pcap"
 
 ```
 

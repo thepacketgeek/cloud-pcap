@@ -16,7 +16,8 @@ services:
     environment:
       - FLASK_APP=app.app
       - FLASK_DEBUG=1
-      - APP_SETTINGS="config.Config"
+      - BASE_DIR=/opt/flask-app
+      - SQLALCHEMY_DATABASE_URI="postgresql://postgres:postgrespswd@db:5432/cloud_pcap"
     depends_on:
       - db
     ports:

@@ -2,13 +2,10 @@
 
 import os
 import datetime
-import time
-import random
-import json
 import uuid
 import base64
 import secrets
-import hashlib
+from enum import Enum
 from os.path import splitext
 
 import chartkick
@@ -39,25 +36,27 @@ from sqlalchemy.orm.exc import NoResultFound
 from werkzeug.utils import secure_filename
 from werkzeug.security import generate_password_hash, check_password_hash
 
-from app import config
-from app.forms import LoginForm, EditTags, ProfileForm, AddUser, EditUser, TempPasswordForm
-from app.pcap_helper import (
-    get_capture_count,
-    decode_capture_file_summary,
-    get_packet_detail,
+from app.config import Config
+from app.forms import (
+    LoginForm,
+    EditTags,
+    ProfileForm,
+    AddUser,
+    EditUser,
+    TempPasswordForm,
 )
+from app.pcap_helper import PcapHelper
 
-basedir = "/opt/flask-app"
 
-## app setup
 app = Flask(__name__)
 bootstrap = Bootstrap(app)
 
 app.jinja_env.add_extension("chartkick.ext.charts")
-# app.config.from_object(os.environ["APP_SETTINGS"])
-app.config.from_object(config.DevelopmentConfig)
-ALLOWED_EXTENSIONS = ["pcap", "pcapng", "cap"]
-UPLOAD_FOLDER = os.path.join(basedir, "static/tracefiles/")
+app.config.from_object(Config)
+
+BASE_DIR = os.environ.get("BASE_DIR", "/opt/flask-app")
+ALLOWED_EXTENSIONS = {"pcap", "pcapng", "cap"}
+UPLOAD_FOLDER = os.path.join(BASE_DIR, "static/tracefiles/")
 
 
 def format_comma(value):
@@ -69,6 +68,7 @@ app.jinja_env.filters["format_comma"] = format_comma
 ## db setup
 db = SQLAlchemy(app, session_options={"expire_on_commit": False})
 
+pcap = PcapHelper(BASE_DIR)
 
 migrate = Migrate(app, db)
 ## Login Manager
@@ -82,6 +82,14 @@ def load_user(user_id):
     return User.query.get(int(user_id))
 
 
+class UserRole(Enum):
+    ADMIN = 0
+    USER = 1
+
+    def __str__(self) -> str:
+        return self.name
+
+
 class User(UserMixin, db.Model):
     __tablename__ = "users"
 
@@ -90,7 +98,7 @@ class User(UserMixin, db.Model):
     username = db.Column(db.String(64), unique=True, index=True)
     password_hash = db.Column(db.String(128))
     token = db.Column(db.String(64))
-    role = db.Column(db.String(64))  # admin, user
+    role = db.Column(db.Enum(UserRole), default=UserRole.USER)
     temp_password = db.Column(db.Boolean())
 
     @property
@@ -98,14 +106,14 @@ class User(UserMixin, db.Model):
         raise AttributeError("password is not a readable attribute")
 
     @password.setter
-    def password(self, password):
+    def password(self, password: str):
         self.password_hash = generate_password_hash(password)
 
-    def verify_password(self, password):
+    def verify_password(self, password: set):
         return check_password_hash(self.password_hash, password)
 
     def __repr__(self):
-        return "<User %r>\n" % self.username
+        return f"<User [{self.role}] {self.username!r}>"
 
 
 class TraceFile(db.Model):
@@ -123,7 +131,7 @@ class TraceFile(db.Model):
     date_added = db.Column(db.DateTime)
 
     def __repr__(self):
-        return "<TraceFile %r, filename: %r>\n" % (self.name, self.filename)
+        return f"<TraceFile {self.name!r}, filename: {self.filename!r}>"
 
 
 class Tag(db.Model):
@@ -134,7 +142,7 @@ class Tag(db.Model):
     file_id = db.Column(db.String(8), db.ForeignKey("tracefiles.id"))
 
     def __repr__(self):
-        return "<Tag %r, file_id: %s>\n" % (self.name, self.file_id)
+        return f"<Tag {self.name!r}, file_id: {self.file_id!r}>"
 
 
 class Log(db.Model):
@@ -145,7 +153,7 @@ class Log(db.Model):
     description = db.Column(db.String)
 
     def __repr__(self):
-        return "<Log: %s - %s - %s>\n" % (self.timestamp, self.level, self.description)
+        return f"<Log [{self.level}]: {self.timestamp} - {self.description}>"
 
 
 def get_uuid():
@@ -156,13 +164,15 @@ def get_uuid():
 def init_db(username="admin", password="cloudpcap"):
     print("Initizializing DB")
     db.create_all()
-    admin = User(username=username, password=password, role="admin", token=get_uuid())
+    admin = User(
+        username=username, password=password, role=UserRole.ADMIN, token=get_uuid()
+    )
     db.session.add(admin)
     print(f"User {username!r} added with password: {password!r}")
     db.session.commit()
 
 
-def allowed_file(filename):
+def allowed_file(filename: str) -> bool:
     return "." in filename and (filename.split(".")[-1] in ALLOWED_EXTENSIONS)
 
 
@@ -262,7 +272,7 @@ def captures(file_id):
     except NoResultFound:
         tagsForm.tags.data = ""
 
-    display_count, details = decode_capture_file_summary(traceFile, display_filter)
+    display_count, details = pcap.decode_capture_file_summary(traceFile, display_filter)
 
     if isinstance(details, str):
         flash(details, "warning")
@@ -286,11 +296,11 @@ def captures(file_id):
 
 
 @app.route("/captures/<file_id>/packetDetail/<int:number>")
-def packet_detail(file_id, number):
+def packet_detail(file_id: str, number: int):
 
     traceFile = TraceFile.query.get_or_404(file_id)
 
-    return get_packet_detail(traceFile, number), 200
+    return pcap.get_packet_detail(traceFile, number), 200
 
 
 @app.route("/users/", methods=["GET", "POST"])
@@ -299,18 +309,20 @@ def users():
     form = AddUser()
 
     if form.validate_on_submit():
-        if current_user.role != "admin":
+        if current_user.role != UserRole.ADMIN:
             flash("You are not permitted to add users.", "warning")
             return redirect(url_for("users"))
 
-        if form.role.data not in ["admin", "user"]:
-            flash("%s is not a valid role." % form.role.data, "warning")
+        try:
+            role = UserRole[form.role.data.upper()]
+        except KeyError:
+            flash(f"{form.role.data!r} is not a valid role.", "warning")
             return redirect(url_for("users"))
 
         user = User(
             username=form.username.data,
             password=form.password.data,
-            role=form.role.data,
+            role=role,
             temp_password=True,
             token=get_uuid(),
         )
@@ -318,12 +330,12 @@ def users():
         db.session.add(user)
         db.session.commit()
 
-        flash("User %s has been added." % user.username, "success")
+        flash(f"User {user.username!r} has been added.", "success")
         return redirect(url_for("users"))
 
     else:
 
-        if current_user.role != "admin":
+        if current_user.role != UserRole.ADMIN:
             flash("You are not permitted to edit users.", "warning")
             return redirect(url_for("dashboard"))
 
@@ -337,31 +349,31 @@ def user(user_id):
     form = EditUser()
 
     if form.validate_on_submit():
-        if current_user.role != "admin":
+        if current_user.role != UserRole.ADMIN:
             flash("You are not permitted to edit users.", "warning")
             return redirect(url_for("users"))
 
-        if form.role.data not in ["admin", "user"]:
-            flash("%s is not a valid role." % form.role.data, "warning")
+        try:
+            role = UserRole[form.role.data.upper()]
+        except KeyError:
+            flash(f"{form.role.data!r} is not a valid role.", "warning")
             return redirect(url_for("users"))
 
         user = User.query.get_or_404(user_id)
-        user.role = form.role.data
+        user.role = role
         db.session.commit()
 
-        flash("Changes to %s have been made." % user.username, "success")
+        flash(f"Changes to {user.username!r} have been made.", "success")
         return redirect(url_for("users"))
 
     else:
 
-        if current_user.role != "admin":
+        if current_user.role != UserRole.ADMIN:
             flash("You are not permitted to edit users.", "warning")
             return redirect(url_for("dashboard"))
 
         user = User.query.get_or_404(user_id)
-
-        form.role.data = user.role
-
+        form.role.data = user.role.name.lower()
         return render_template("users.html", form=form, user=user)
 
 
@@ -374,9 +386,8 @@ def delete_user(user_id):
 
     db.session.commit()
 
-    log("info", "Deleting user: %s" % name)
-
-    flash("User %s has been deleted" % name, "success")
+    log("info", f"Deleting user: {name!r}")
+    flash(f"User {name!r} has been deleted", "success")
     return redirect("users")
 
 
@@ -420,13 +431,8 @@ def api_upload_file(token):
     try:
         user = User.query.filter_by(token=token).one()
     except NoResultFound:
-        return (
-            json.dumps(
-                {"status": 404, "exceptions": ["API Token is missing or invalid"]}
-            ),
-            404,
-        )
-    
+        return jsonify(exceptions=["API Token is missing or invalid"], status=404)
+
     if request.method == "POST":
         traceFile = request.files["file"]
         filename = traceFile.filename
@@ -437,20 +443,14 @@ def api_upload_file(token):
     else:
         filename = request.args.get("filename")
         filetype = splitext(filename)[1].strip(".")
-        uuid_filename = ".".join([str(uuid.uuid4()), filetype])
+        uuid_filename = f"{uuid.uuid4()}.{filetype}"
         with open(os.path.join(UPLOAD_FOLDER, uuid_filename), "w") as f:
             f.write(request.stream.read())
 
     if not allowed_file(filename):
         os.remove(os.path.join(UPLOAD_FOLDER, uuid_filename))
-        return (
-            json.dumps(
-                {
-                    "status": 406,
-                    "exceptions": ["Not a valid file type. (pcap, pcapng, cap)"],
-                }
-            ),
-            406,
+        return jsonify(
+            exceptions=["Not a valid file type. (pcap, pcapng, cap)"], status=406
         )
 
     new_file = TraceFile(
@@ -460,7 +460,7 @@ def api_upload_file(token):
         filename=uuid_filename,
         filetype=filetype,
         filesize=os.path.getsize(os.path.join(UPLOAD_FOLDER, uuid_filename)),
-        packet_count=get_capture_count(uuid_filename),
+        packet_count=pcap.get_capture_count(uuid_filename),
         date_added=datetime.datetime.now(),
     )
 
@@ -477,8 +477,8 @@ def api_upload_file(token):
 
     db.session.commit()
 
-    log("info", "File uploaded by '%s': %s." % (user.username, filename))
-    return json.dumps({"filename": filename, "id": new_file.id}), 202
+    log("info", f"File uploaded by {user.username!r}: {filename!r}.")
+    return jsonify(filename=filename, id=new_file.id, status=202)
 
 
 @app.route("/captures/upload")
@@ -486,7 +486,6 @@ def api_upload_file(token):
 def upload_file():
 
     api_upload_file(current_user.token)
-
     return redirect(url_for("home"))
 
 
@@ -496,18 +495,12 @@ def api_delete_file(token, file_id):
     try:
         traceFile = TraceFile.query.filter_by(id=file_id).one()
     except NoResultFound:
-        return (
-            json.dumps({"status": 404, "message": "Capture not found.", "id": file_id}),
-            404,
-        )
+        return jsonify(message="Capture not found.", id=file_id, status=404)
 
     try:
         user = User.query.filter_by(id=traceFile.user_id).one()
     except NoResultFound:
-        return (
-            json.dumps({"status": 404, "message": "Capture not found.", "id": file_id}),
-            404,
-        )
+        return jsonify(message="Capture not found.", id=file_id, status=404)
 
     if token == user.token:
         Tag.query.filter_by(file_id=file_id).delete()
@@ -515,20 +508,12 @@ def api_delete_file(token, file_id):
 
         db.session.commit()
         os.remove(os.path.join(UPLOAD_FOLDER, traceFile.filename))
-        log("info", "File deleted by '%s': %s." % (user.username, traceFile.name))
-        return (
-            json.dumps(
-                {
-                    "status": 200,
-                    "message": "Capture deleted successfully.",
-                    "id": traceFile.id,
-                }
-            ),
-            200,
+        log("info", f"File deleted by {user.username!r}: {traceFile.name}.")
+        return jsonify(
+            message="Capture deleted successfully.", id=traceFile.id, status=200
         )
     else:
-
-        return json.dumps({"status": 403, "message": "Not Authorized."}), 403
+        return jsonify(message="Not Authorized.", status=403)
 
 
 @app.route("/captures/delete/<file_id>")
@@ -649,4 +634,5 @@ def make_shell_context():
 
 
 if __name__ == "__main__":
-    app.run(host='0.0.0.0', debug=True, threaded=True)
+    app.run(host="0.0.0.0", debug=True, threaded=True)
+

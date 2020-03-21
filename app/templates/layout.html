@@ -55,7 +55,7 @@
 	    	          <a href="#" class="dropdown-toggle" data-toggle="dropdown">{{ current_user.username }} <span class="caret"></span></a>
 	    	          <ul class="dropdown-menu" role="menu">
 	    	            <li><a href="{{ url_for('profile') }}"><i class="fa fa-cogs"></i> Profile Settings</a></li>
-	    	            {% if current_user.role == 'admin' %}
+	    	            {% if current_user.role.name == 'ADMIN' %}
 		    	            <li><a href="{{ url_for('users') }}"><i class="fa fa-users"></i> Edit Users</a></li>
 		    	            <li><a href="{{ url_for('logs') }}"><i class="fa fa-list-alt"></i> View Logs</a></li>
 		    	        {% endif %}

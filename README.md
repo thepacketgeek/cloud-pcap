@@ -26,9 +26,13 @@ Create a `app/config.py` file, E.g.:
 ```python
 #!/usr/bin/env python3
 
+import os
+
+
 class Config:
     SQLALCHEMY_COMMIT_ON_TEARDOWN = True
     SECRET_KEY = "REPLACE_ME"
+    SQLALCHEMY_DATABASE_URI = os.environ["SQLALCHEMY_DATABASE_URI"]
 
 ```
 

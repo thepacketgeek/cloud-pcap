@@ -6,18 +6,15 @@ from wtforms import (
     SubmitField,
     SelectField,
     PasswordField,
-    TextAreaField,
-    BooleanField,
-    IntegerField,
 )
 from wtforms.validators import (
     Required,
-    IPAddress,
     StopValidation,
     Email,
     EqualTo,
-    NumberRange,
 )
+
+from app import models as m
 
 
 def optional_validation(form, field):
@@ -35,12 +32,12 @@ class AddUser(FlaskForm):
     username = StringField("Username", validators=[Required()])
     # email = StringField('Email Address', validators=[Email(), optional_validation])
     password = PasswordField("Temporary Password")
-    role = SelectField("Role", choices=[("admin", "Admin"), ("user", "User")])
+    role = SelectField("Role", choices=[(r.name.lower(), r.name) for r in m.UserRole])
     submit = SubmitField("Add")
 
 
 class EditUser(FlaskForm):
-    role = SelectField("Role", choices=[("admin", "Admin"), ("user", "User")])
+    role = SelectField("Role", choices=[(r.name.lower(), r.name) for r in m.UserRole])
     submit = SubmitField("Save")
 
 
@@ -52,19 +49,18 @@ class EditTags(FlaskForm):
 class LoginForm(FlaskForm):
     username = StringField("Username", validators=[Required()])
     password = PasswordField("Password", validators=[Required()])
-    # remember_me = BooleanField('Keep me logged in')
     submit = SubmitField("Log In")
 
 
 class ProfileForm(FlaskForm):
-    email = StringField("Email Address", validators=[Email(), optional_validation])
+    email = StringField("Email Address", validators=[Email(), optional_validation],)
     current_password = PasswordField("Current Password")
-    new_password1 = PasswordField("New Password", validators=[optional_validation])
+    new_password1 = PasswordField("New Password", validators=[optional_validation],)
     new_password2 = PasswordField(
         "New Password Confirmation",
         validators=[
             optional_validation,
-            EqualTo("new_password1", message=u"New passwords must match."),
+            EqualTo("new_password1", message="New passwords must match."),
         ],
     )
     submit = SubmitField("Save")
@@ -72,12 +68,12 @@ class ProfileForm(FlaskForm):
 
 class TempPasswordForm(FlaskForm):
     temp_password = PasswordField("Temp Password")
-    new_password1 = PasswordField("New Password", validators=[optional_validation])
+    new_password1 = PasswordField("New Password", validators=[optional_validation],)
     new_password2 = PasswordField(
         "New Password Confirmation",
         validators=[
             optional_validation,
-            EqualTo("new_password1", message=u"New passwords must match."),
+            EqualTo("new_password1", message="New passwords must match."),
         ],
     )
     submit = SubmitField("Save")

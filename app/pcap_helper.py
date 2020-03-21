@@ -1,7 +1,6 @@
 #!/usr/bin/env python3
 
 import os
-import datetime
 import sys
 from io import StringIO
 
@@ -16,11 +15,12 @@ class PcapHelper:
     def get_capture_count(self, filename: str) -> int:
         """ Get the packet count for a given pcap filename """
         p = pyshark.FileCapture(
-            os.path.join(self.upload_folder, filename), only_summaries=True, keep_packets=False
+            os.path.join(self.upload_folder, filename),
+            only_summaries=True,
+            keep_packets=False,
         )
         p.load_packets()
         return len(p)
-
 
     def decode_capture_file_summary(self, traceFile, display_filter=None):
         if display_filter:
@@ -99,16 +99,12 @@ class PcapHelper:
 
         try:
             cap.apply_on_packets(decode_packet, timeout=10)
-        except:
-            return (
-                0,
-                "Capture File is too large, please try downloading and analyzing locally.",
-            )
+        except Exception as exc:
+            return (0, f"Capture File Error: {exc}")
 
         details["stats"]["avg_length"] = sum(avg_length) / len(avg_length)
 
         return len(cap), details
-
 
     def get_packet_detail(self, traceFile, number):
         cap = pyshark.FileCapture(os.path.join(self.upload_folder, traceFile.filename))
@@ -180,4 +176,3 @@ class PcapHelper:
 
         detail += "</div></div></div>"
         return detail
-

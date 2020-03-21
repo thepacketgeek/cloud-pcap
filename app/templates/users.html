@@ -32,11 +32,7 @@ Users
 					  <form class="form" method="post" role="form">
 					    {{ form.hidden_tag() }}
 					    {{ wtf.form_errors(form, hiddens="only") }}
-
-					    
 					    {{ wtf.form_field(form.role) }}
-
-					  
 					  {{ wtf.form_field(form.submit, button_map={'submit': 'primary'}) }}
 					  </form>
 				</div>	

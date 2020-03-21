@@ -61,23 +61,24 @@ Cloud-Pcap
 			</div>
 			<div class="col-lg-3 col-md-3">
 				<div class="panel panel-default" >
-					<div class="panel-heading">Tags
-
+					<div class="panel-heading">
+						Tags
 						<a href="{{ url_for('home') }}"><i class="fa fa-ban text-danger pull-right"></i></a>
 					</div>
 					<div class="panel-body">
 						<ul class="list-group">
-						
 						{% for tag in tags %}
-							<a href="{{ url_for('home', tag=tag) }}"><button class="tag-btn btn btn-sm btn-primary">{{ tag }}</button></a>
+							<a href="{{ url_for('home', tag=tag) }}">
+								<button class="tag-btn btn btn-sm btn-primary">
+									{{ tag }}
+								</button>
+							</a>
 						{% endfor %}
 						</ul>
 					</div>
 				</div>
 			</div>
 		</div>
-
-		
 
 		<!-- Temp Password Modal -->
 		<div class="modal fade" id="tempPasswordModal">

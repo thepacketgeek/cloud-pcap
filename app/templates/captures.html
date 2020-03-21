@@ -157,11 +157,13 @@ Captures - {{ traceFile.name }}
 		  <div class="modal-dialog">
 		    <div class="modal-content">
 		      <div class="modal-header">
-		        <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+		        <button type="button" class="close" data-dismiss="modal">
+				  <span aria-hidden="true">&times;</span>
+				  <span class="sr-only">Close</span>
+				</button>
 		        <h4 class="modal-title">Tags</h4>
 		      </div>
 		      <div class="modal-body">
-		      	
 		      {{ wtf.form_field(tagsForm.tags, class="", **{'data-role':'tagsinput', 'data-provide':'typeahead'}) }}
 		      </div>
 		    </div><!-- /.modal-content -->
@@ -200,18 +202,31 @@ Captures - {{ traceFile.name }}
 		    position: '50%'
 		});
 
-		$('input#tags').on('itemAdded itemRemoved', function(event) {
+		$('input#tags-tags').on('itemAdded', function(event) {
 	   		event.preventDefault();
-	   		var data = $('input#tags').val();
+	   		let added_tag = event.item;
+			console.log(added_tag);
 
 	   		$.ajax({
 	   			type : "POST",
-	   			url : "/savetags/{{ traceFile.id }}",
-	   			data : data,
+	   			url : "/add_tag/{{ traceFile.id }}",
+	   			data : added_tag,
 	   			dataType : "json",
 	   			contentType: 'application/json;charset=UTF-8'
 	   		});
+	   	});
+		
+		$('input#tags-tags').on('itemRemoved', function(event) {
+	   		event.preventDefault();
+	   		let removed_tag = event.item;
 
+	   		$.ajax({
+	   			type : "POST",
+	   			url : "/savetags/{{ traceFile.id }}/",
+	   			data : removed_tag,
+	   			dataType : "json",
+	   			contentType: 'application/json;charset=UTF-8'
+	   		});
 	   	});
 
 	   	$('a#editName').on('click', function(event) {

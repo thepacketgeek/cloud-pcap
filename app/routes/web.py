@@ -86,17 +86,23 @@ def home():
         return redirect(url_for("home"))
 
     else:
-        tag = request.args.get("tag")
-        if tag:
-            traceFiles = [
-                m.TraceFile.query.filter_by(id=x.file_id).first()
-                for x in m.Tag.query.filter_by(name=tag).all()
-            ]
-        else:
-            traceFiles = m.TraceFile.query.all()
+        traceFiles = None
+        tag = None
+        if tag_name := request.args.get("tag"):
+            if tag := m.Tag.query.filter_by(name=tag_name.lower()).first():
+                traceFiles = tag.tracefiles
 
-        tags = set([x.name for x in m.Tag.query.all()])
-        return render_template("home.html", form=form, traceFiles=traceFiles, tags=tags)
+        # If no tag is matched, display all Tracefiles
+        traceFiles = traceFiles or m.TraceFile.query.all()
+
+        tags = [x.name for x in m.Tag.query.all()]
+        return render_template(
+            "home.html",
+            form=form,
+            traceFiles=traceFiles,
+            tags=tags,
+            current_tag=tag,
+        )
 
 
 @app.route("/profile/", methods=["GET", "POST"])
@@ -128,18 +134,14 @@ def profile():
 
 @app.route("/captures/<file_id>")
 @login_required
-def captures(file_id):
+def captures(file_id: str):
     tagsForm = EditTags(prefix="tags")
     display_filter = request.args.get("display_filter")
     traceFile = m.TraceFile.query.get_or_404(file_id)
 
-    try:
-        tagsForm.tags.data = ", ".join(
-            x.name for x in m.Tag.query.filter_by(file_id=file_id).all()
-        )
-    except NoResultFound:
-        tagsForm.tags.data = ""
+    tag_names = [t.name for t in traceFile.tags]
 
+    tagsForm.tags.data = ", ".join(tag_names)
     display_count, details = pcap.decode_capture_file_summary(traceFile, display_filter)
 
     if isinstance(details, str):
@@ -151,15 +153,13 @@ def captures(file_id):
             display_count=display_count,
         )
 
-    tags = set([x.name for x in m.Tag.query.all()])
-
     return render_template(
         "captures.html",
         traceFile=traceFile,
         tagsForm=tagsForm,
         display_count=display_count,
         details=details,
-        tags=tags,
+        tags=tag_names,
     )
 
 
@@ -183,42 +183,50 @@ def delete_file(file_id):
     return redirect(url_for("home"))
 
 
-@app.route("/savetags/<file_id>", methods=["POST"])
+@app.route("/add_tag/<file_id>", methods=["POST"])
 @login_required
-def save_tags(file_id):
-    tags = request.data
+def add_tag(file_id: str):
+    tag_name = request.data.decode("utf-8")
+    trace_file = m.TraceFile.query.get_or_404(file_id)
 
-    # delete tags
-    m.Tag.query.filter_by(file_id=file_id).delete()
-    # add remaining tags
-    for tag in [x.strip() for x in tags.split(",")]:
-        if tag != "":
-            new_tag = m.Tag(name=secure_filename(tag), file_id=file_id)
-            db.session.add(new_tag)
+    if tag_name in {t.name for t in trace_file.tags}:
+        return "Tag exists"
 
+    new_tag = m.Tag(name=tag_name.lower())
+    trace_file.tags.append(new_tag)
     db.session.commit()
 
-    return "Tags have been updated."
+    return f"Tag {tag_name!r} has been added."
+
+
+@app.route("/remove_tag/<file_id>", methods=["POST"])
+@login_required
+def remove_tag(file_id: str):
+    tag_name = request.data.decode("utf-8")
+    trace_file = m.TraceFile.query.get_or_404(file_id)
+
+    if tag := m.Tag.query.with_parent(trace_file).first():
+        trace_file.tags.remove(tag)
+        db.session.commit()
+
+    return f"Tag {tag_name!r} has been removed."
 
 
 @app.route("/savename/<file_id>", methods=["POST"])
 @login_required
 def save_name(file_id):
-    name = request.data
-
-    if name:
-        traceFile = m.TraceFile.query.filter_by(id=file_id).one()
-        traceFile.name = secure_filename(name)
-        db.session.commit()
-
-    return "Name has been updated."
+    name = request.data.decode("utf-8")
+    traceFile = m.TraceFile.query.filter_by(id=file_id).one()
+    old_name = traceFile.name
+    traceFile.name = secure_filename(name)
+    db.session.commit()
+    return f"Filename has been changed from {old_name!r} to {traceFile.name!r}."
 
 
 @app.route("/downloadfile/<file_id>/<attachment_name>")
 @login_required
 def download_file(file_id, attachment_name):
     traceFile = m.TraceFile.query.get_or_404(file_id)
-
     return send_file(
         os.path.join(pcap.upload_folder, traceFile.filename),
         attachment_filename=attachment_name,

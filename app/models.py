@@ -47,6 +47,15 @@ class User(UserMixin, db.Model):
         return f"<User [{self.role}] {self.username!r}>"
 
 
+tags = db.Table(
+    "trace_tags",
+    db.Column("tag_id", db.Integer, db.ForeignKey("tags.id"), primary_key=True),
+    db.Column(
+        "tracefiles_id", db.String(8), db.ForeignKey("tracefiles.id"), primary_key=True
+    ),
+)
+
+
 class TraceFile(db.Model):
     __tablename__ = "tracefiles"
 
@@ -61,6 +70,13 @@ class TraceFile(db.Model):
     packet_count = db.Column(db.Integer)
     date_added = db.Column(db.DateTime)
 
+    tags = db.relationship(
+        "Tag",
+        secondary=tags,
+        lazy="subquery",
+        backref=db.backref("tracefiles", lazy=True),
+    )
+
     def __repr__(self):
         return f"<TraceFile {self.name!r}, filename: {self.filename!r}>"
 
@@ -70,10 +86,10 @@ class Tag(db.Model):
 
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(64))
-    file_id = db.Column(db.String(8), db.ForeignKey("tracefiles.id"))
 
     def __repr__(self):
-        return f"<Tag {self.name!r}, file_id: {self.file_id!r}>"
+        num_files = len(self.tracefiles)
+        return f"<Tag {self.name!r} files={num_files}>"
 
 
 class Log(db.Model):

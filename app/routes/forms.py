@@ -53,9 +53,9 @@ class LoginForm(FlaskForm):
 
 
 class ProfileForm(FlaskForm):
-    email = StringField("Email Address", validators=[Email(), optional_validation],)
+    email = StringField("Email Address", validators=[Email(), optional_validation])
     current_password = PasswordField("Current Password")
-    new_password1 = PasswordField("New Password", validators=[optional_validation],)
+    new_password1 = PasswordField("New Password", validators=[optional_validation])
     new_password2 = PasswordField(
         "New Password Confirmation",
         validators=[
@@ -67,8 +67,7 @@ class ProfileForm(FlaskForm):
 
 
 class TempPasswordForm(FlaskForm):
-    temp_password = PasswordField("Temp Password")
-    new_password1 = PasswordField("New Password", validators=[optional_validation],)
+    new_password1 = PasswordField("New Password", validators=[optional_validation])
     new_password2 = PasswordField(
         "New Password Confirmation",
         validators=[

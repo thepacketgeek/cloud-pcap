@@ -21,9 +21,6 @@ Users
 		{% endfor %}
 		
 		{% if user %}
-			
-		
-
 			<h2>Edit User: {{ user.username }}
 			<button type="button" class="pull-right btn btn-danger btn-xs" data-toggle="modal" data-target="#deleteModal">Delete User</button>
 			</h2>
@@ -45,8 +42,6 @@ Users
 				</div>	
 			</div>
 		</div>
-
-		
 
 			<!-- Delete Modal -->
 			<div class="modal fade" id="deleteModal">
@@ -100,7 +95,6 @@ Users
 			</div>
 			<br/>
 			
-
 			<!-- Add User Modal -->
 			<div class="modal fade" id="addUserModal">
 			  <div class="modal-dialog">
@@ -126,9 +120,6 @@ Users
 			    </div><!-- /.modal-content -->
 			  </div><!-- /.modal-dialog -->
 			</div><!-- /.modal -->
-			
-
-
 
 		{% endif %}
 

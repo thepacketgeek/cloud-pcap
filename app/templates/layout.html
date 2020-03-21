@@ -3,14 +3,11 @@
 {% block head %}
 {{super()}}
 
-<title>{% block title %}{% endblock %} - Sub Reach</title> 
+<title>{% block title %}{% endblock %}</title> 
 <link rel="shortcut icon" href="{{ url_for('static', filename='favicon.ico') }}">
 <script src="//cdnjs.cloudflare.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
-<!-- <script src="{{ url_for('static', filename='jquery.min.js') }}"></script> -->
-<!-- <script src="{{ url_for('static', filename='bootstrap.min.js') }}"></script> -->
-<script src="//maxcdn.bootstrapcdn.com/bootstrap/3.3.0/js/bootstrap.min.js"></script>
+<script src="//maxcdn.bootstrapcdn.com/bootstrap/3.3.5/js/bootstrap.min.js"></script>
 <script src="//cdnjs.cloudflare.com/ajax/libs/highcharts/4.0.4/highcharts.js"></script>
-<!-- <script src="{{ url_for('static', filename='highcharts.js') }}"></script> -->
 <script src="{{ url_for('static', filename='chartkick.js') }}"></script>
 <script src="{{ url_for('static', filename='bootstrap-table.min.js') }}"></script>
 
@@ -20,7 +17,7 @@
 
 {% block styles %}
 {{ super() }}
-<link href="//maxcdn.bootstrapcdn.com/bootstrap/3.3.0/css/bootstrap.min.css" rel="stylesheet">
+<link href="//maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css" rel="stylesheet">
 <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='bootstrap-table.min.css') }}">
 <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='bootstrap-tagsinput.css') }}">
 <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/dropzone.css') }}">

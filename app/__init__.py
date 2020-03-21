@@ -6,6 +6,7 @@ import random
 import string
 from typing import Optional
 
+import click
 from flask import Flask
 from flask_bootstrap import Bootstrap
 from flask_login import LoginManager
@@ -49,21 +50,6 @@ from app import models as m
 from app.routes import admin, web  # noqa
 
 
-# Create DB tables and default admin user if they don't exist
-def init_db(username: str = "admin", password: Optional[str] = None):
-    print("Initizializing DB")
-    db.create_all()
-
-    if password is None:
-        password = "".join(random.choice(string.ascii_lowercase) for i in range(20))
-    admin_user = m.User(
-        username=username, password=password, role=m.UserRole.ADMIN, token=m.get_uuid(),
-    )
-    db.session.add(admin_user)
-    print(f"User {username!r} added with password: {password!r}")
-    db.session.commit()
-
-
 @app.before_first_request
 def schedule_updates():
     log("info", "-------------- App has started --------------")
@@ -80,3 +66,28 @@ def make_shell_context():
         Log=m.Log,
         init_db=init_db,
     )
+
+
+@app.cli.command("init")
+@click.option("-p", "--password")
+def init_db(password: Optional[str] = None):
+    """ Initialize App with  DB tables and default admin user """
+    print("Initizializing DB")
+    db.create_all()
+
+    if password is None:
+        password = "".join(random.choice(string.ascii_lowercase) for i in range(20))
+        is_temp_password = True
+    else:
+        is_temp_password = False
+
+    admin_user = m.User(
+        username="admin",
+        password=password,
+        role=m.UserRole.ADMIN,
+        token=m.get_uuid(),
+        temp_password=is_temp_password,
+    )
+    db.session.add(admin_user)
+    print(f"User {admin_user.username!r} added with password: {password!r}")
+    db.session.commit()

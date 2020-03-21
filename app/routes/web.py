@@ -79,13 +79,6 @@ def home():
 
     if form.validate_on_submit():
         user = m.User.query.filter_by(id=current_user.id).one()
-
-        if user.verify_password(form.temp_password.data):
-            user.password = form.new_password1.data
-        else:
-            flash("Current password is not correct.", "danger")
-            return redirect(url_for("home"))
-
         user.temp_password = False
         db.session.commit()
 
@@ -93,7 +86,6 @@ def home():
         return redirect(url_for("home"))
 
     else:
-
         tag = request.args.get("tag")
         if tag:
             traceFiles = [

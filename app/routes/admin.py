@@ -104,7 +104,7 @@ def delete_user(user_id):
 
     log("info", f"Deleting user: {name!r}")
     flash(f"User {name!r} has been deleted", "success")
-    return redirect("users")
+    return redirect(url_for("users"))
 
 
 @app.route("/help/")

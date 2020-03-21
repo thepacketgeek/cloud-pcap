@@ -41,12 +41,8 @@ class Config:
 * `$ git clone https://github.com/thepacketgeek/cloud-pcap.git`
 * `$ cd cloud_pcap`
 * `$ docker-compose up --build`
-* `$ docker-compose run app flask shell`
-    ```
-    >>> init_db()
-    >>> quit()
-    ```
-   	* Default user admin/cloudpcap is now setup
+* `$ docker-compose run app flask init`
+   	* Admin user is now setup (password printed to stdout)
 
 ## Screenshots
 

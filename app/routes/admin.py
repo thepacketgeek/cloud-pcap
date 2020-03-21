@@ -97,7 +97,6 @@ def user(user_id):
 @app.route("/users/<user_id>/delete/")
 @login_required
 def delete_user(user_id):
-
     name = m.User.query.get_or_404(user_id).username
     m.User.query.filter_by(id=user_id).delete()
 
@@ -117,7 +116,6 @@ def help():
 @app.route("/logs/")
 @login_required
 def logs():
-
     level = request.args.get("level")
     limit = request.args.get("limit")
 

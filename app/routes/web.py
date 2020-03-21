@@ -61,7 +61,6 @@ def login():
             return redirect(url_for("home"))
         else:
             return redirect(request.args.get("next") or url_for("home"))
-
     else:
         return render_template("login.html", form=form)
 
@@ -76,11 +75,9 @@ def logout():
 @app.route("/", methods=["GET", "POST"])
 @login_required
 def home():
-
     form = TempPasswordForm()
 
     if form.validate_on_submit():
-
         user = m.User.query.filter_by(id=current_user.id).one()
 
         if user.verify_password(form.temp_password.data):
@@ -98,32 +95,24 @@ def home():
     else:
 
         tag = request.args.get("tag")
-
         if tag:
             traceFiles = [
                 m.TraceFile.query.filter_by(id=x.file_id).first()
                 for x in m.Tag.query.filter_by(name=tag).all()
             ]
-            # For future use of filtering just one users' files
-            # traceFiles = [TraceFile.query.filter_by(user_id=current_user.id).filter_by(id=x.file_id).first() for x in m.Tag.query.filter_by(name=tag).all()]
         else:
             traceFiles = m.TraceFile.query.all()
-            # For future use of filtering just one users' files
-            # traceFiles = TraceFile.query.filter_by(user_id=current_user.id).all()
 
         tags = set([x.name for x in m.Tag.query.all()])
-
         return render_template("home.html", form=form, traceFiles=traceFiles, tags=tags)
 
 
 @app.route("/profile/", methods=["GET", "POST"])
 @login_required
 def profile():
-
     form = ProfileForm()
 
     if form.validate_on_submit():
-
         user = m.User.query.filter_by(username=current_user.username).one()
         user.email = form.email.data
 
@@ -136,23 +125,18 @@ def profile():
                 return redirect(url_for("profile"))
 
         db.session.commit()
-
         flash("Profile changes saved.", "success")
         return redirect(url_for("profile"))
 
     else:
-
         user = m.User.query.filter_by(username=current_user.username).one()
-
         form.email.data = user.email
-
         return render_template("profile.html", form=form)
 
 
 @app.route("/captures/<file_id>")
 @login_required
 def captures(file_id):
-
     tagsForm = EditTags(prefix="tags")
     display_filter = request.args.get("display_filter")
     traceFile = m.TraceFile.query.get_or_404(file_id)
@@ -210,7 +194,6 @@ def delete_file(file_id):
 @app.route("/savetags/<file_id>", methods=["POST"])
 @login_required
 def save_tags(file_id):
-
     tags = request.data
 
     # delete tags
@@ -229,15 +212,11 @@ def save_tags(file_id):
 @app.route("/savename/<file_id>", methods=["POST"])
 @login_required
 def save_name(file_id):
-
     name = request.data
 
     if name:
-
         traceFile = m.TraceFile.query.filter_by(id=file_id).one()
-
         traceFile.name = secure_filename(name)
-
         db.session.commit()
 
     return "Name has been updated."
@@ -246,7 +225,6 @@ def save_name(file_id):
 @app.route("/downloadfile/<file_id>/<attachment_name>")
 @login_required
 def download_file(file_id, attachment_name):
-
     traceFile = m.TraceFile.query.get_or_404(file_id)
 
     return send_file(

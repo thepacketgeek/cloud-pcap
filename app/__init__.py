@@ -2,6 +2,9 @@
 
 import datetime
 import os
+import random
+import string
+from typing import Optional
 
 from flask import Flask
 from flask_bootstrap import Bootstrap
@@ -36,24 +39,25 @@ pcap = PcapHelper(BASE_DIR)
 
 def log(level, description):
     log = m.Log(
-        timestamp=datetime.datetime.now(),
-        level=level.upper(),
-        description=description,
+        timestamp=datetime.datetime.now(), level=level.upper(), description=description,
     )
     db.session.add(log)
     db.session.commit()
 
 
 from app import models as m
-from app.routes import admin, web
+from app.routes import admin, web  # noqa
 
 
 # Create DB tables and default admin user if they don't exist
-def init_db(username="admin", password="cloudpcap"):
+def init_db(username: str = "admin", password: Optional[str] = None):
     print("Initizializing DB")
     db.create_all()
+
+    if password is None:
+        password = "".join(random.choice(string.ascii_lowercase) for i in range(20))
     admin_user = m.User(
-        username=username, password=password, role=m.UserRole.ADMIN, token=m.get_uuid()
+        username=username, password=password, role=m.UserRole.ADMIN, token=m.get_uuid(),
     )
     db.session.add(admin_user)
     print(f"User {username!r} added with password: {password!r}")

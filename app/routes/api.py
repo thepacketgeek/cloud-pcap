@@ -19,7 +19,6 @@ def allowed_file(filename: str) -> bool:
 
 @app.route("/api/v1/<token>/upload", methods=["POST", "PUT"])
 def api_upload_file(token):
-
     try:
         user = m.User.query.filter_by(token=token).one()
     except NoResultFound:
@@ -75,7 +74,6 @@ def api_upload_file(token):
 
 @app.route("/api/v1/<token>/delete/<file_id>")
 def api_delete_file(token, file_id):
-
     try:
         traceFile = m.TraceFile.query.filter_by(id=file_id).one()
     except NoResultFound:

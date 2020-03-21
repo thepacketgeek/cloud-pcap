@@ -21,28 +21,21 @@ A charmingly pathetic knock-off of cloudshark.org that I use for simple cloud pc
 ### Pre-requisites
 - Docker/Docker-compose
 
-### Config File
-Create a `app/config.py` file, E.g.:
-```python
-#!/usr/bin/env python3
-
-import os
-
-
-class Config:
-    SQLALCHEMY_COMMIT_ON_TEARDOWN = True
-    SECRET_KEY = "REPLACE_ME"
-    SQLALCHEMY_DATABASE_URI = os.environ["SQLALCHEMY_DATABASE_URI"]
-
-```
-
 ### Installation Steps
 
 * `$ git clone https://github.com/thepacketgeek/cloud-pcap.git`
 * `$ cd cloud_pcap`
-* `$ docker-compose up --build`
-* `$ docker-compose run app flask init`
-   	* Admin user is now setup (password printed to stdout)
+* `$ ./install.sh`
+
+App is now running and `admin` user is now setup (password printed to stdout)
+
+
+### Updating/Dev/Debug
+You can stop the docker containers with:
+`$ docker-compose down`
+
+Start them again (without rebuilding) to pickup code changes with:
+`$ docker-compose up`
 
 ## Screenshots
 
@@ -51,13 +44,6 @@ class Config:
 ![screenshot2](docs/cloud-pcap2.png "Screenshot #2")
 
 ![screenshot3](docs/cloud-pcap3.png "Screenshot #3")
-
-## Coming Soon
-
-* Group permissions?
-* Heroku-Deployment ready
-* Display Filtering Auto-complete
-* Vagrantfile for quick development environment setup
 
 
 ## Built With...

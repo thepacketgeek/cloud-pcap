@@ -13,7 +13,7 @@ from flask_login import LoginManager
 from flask_sqlalchemy import SQLAlchemy
 from flask_migrate import Migrate
 
-from .config import Config
+from app import config
 from app.pcap_helper import PcapHelper
 
 
@@ -23,12 +23,12 @@ app = Flask(__name__)
 bootstrap = Bootstrap(app)
 
 app.jinja_env.add_extension("chartkick.ext.charts")
-app.config.from_object(Config)
+app.config.from_object(config.Config)
 app.jinja_env.filters["format_comma"] = lambda v: f"{v:,.0f}"
 
 
 db = SQLAlchemy(app, session_options={"expire_on_commit": False})
-migrate = Migrate(app, db)
+migrate = Migrate(app, db, directory=os.path.join(BASE_DIR, "migrations"))
 
 login_manager = LoginManager(app)
 login_manager.session_protection = "strong"
@@ -50,31 +50,23 @@ from app import models as m
 from app.routes import admin, web  # noqa
 
 
-@app.before_first_request
-def schedule_updates():
-    log("info", "-------------- App has started --------------")
-
-
 @app.shell_context_processor
 def make_shell_context():
     return dict(
         app=app,
         db=db,
         User=m.User,
+        UserRole=m.UserRole,
         Tag=m.Tag,
         TraceFile=m.TraceFile,
         Log=m.Log,
-        init_db=init_db,
     )
 
 
-@app.cli.command("init")
+@app.cli.command("create-admin")
 @click.option("-p", "--password")
-def init_db(password: Optional[str] = None):
-    """ Initialize App with  DB tables and default admin user """
-    print("Initizializing DB")
-    db.create_all()
-
+def create_admin(password: Optional[str] = None):
+    """ Initialize App with default admin user """
     if password is None:
         password = "".join(random.choice(string.ascii_lowercase) for i in range(20))
         is_temp_password = True

@@ -25,7 +25,7 @@ A charmingly pathetic knock-off of cloudshark.org that I use for simple cloud pc
 
 * `$ git clone https://github.com/thepacketgeek/cloud-pcap.git`
 * `$ cd cloud_pcap`
-* `$ ./install.sh`
+* `$ ./init.sh`
 
 App is now running and `admin` user is now setup (password printed to stdout)
 

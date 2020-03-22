@@ -21,9 +21,6 @@ Users
 		{% endfor %}
 		
 		{% if user %}
-			
-		
-
 			<h2>Edit User: {{ user.username }}
 			<button type="button" class="pull-right btn btn-danger btn-xs" data-toggle="modal" data-target="#deleteModal">Delete User</button>
 			</h2>
@@ -35,18 +32,12 @@ Users
 					  <form class="form" method="post" role="form">
 					    {{ form.hidden_tag() }}
 					    {{ wtf.form_errors(form, hiddens="only") }}
-
-					    
 					    {{ wtf.form_field(form.role) }}
-
-					  
 					  {{ wtf.form_field(form.submit, button_map={'submit': 'primary'}) }}
 					  </form>
 				</div>	
 			</div>
 		</div>
-
-		
 
 			<!-- Delete Modal -->
 			<div class="modal fade" id="deleteModal">
@@ -69,7 +60,7 @@ Users
 
 		{% else %}
 			<h3>User List
-				{% if current_user.role == 'admin' %}
+				{% if current_user.role.name == 'ADMIN' %}
 					<button type="button" class="btn btn-default btn-xs pull-right" data-toggle="modal" data-target="#addUserModal">Add User</button>
 				{% endif %}
 			</h3>
@@ -100,7 +91,6 @@ Users
 			</div>
 			<br/>
 			
-
 			<!-- Add User Modal -->
 			<div class="modal fade" id="addUserModal">
 			  <div class="modal-dialog">
@@ -126,9 +116,6 @@ Users
 			    </div><!-- /.modal-content -->
 			  </div><!-- /.modal-dialog -->
 			</div><!-- /.modal -->
-			
-
-
 
 		{% endif %}
 

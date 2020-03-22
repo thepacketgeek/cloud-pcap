@@ -1,0 +1,32 @@
+version: "3"
+
+services:
+  db:
+    image: postgres
+    container_name: postgres
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgrespswd
+      POSTGRES_DB: cloud_pcap
+    expose:
+      - 5432
+    volumes:
+    - db-data:/var/lib/postgresql/data
+  app:
+    build: ./
+    environment:
+      - FLASK_APP=app:app
+      - FLASK_DEBUG=1
+      - BASE_DIR=/opt/flask-app
+    depends_on:
+      - db
+    ports:
+      - "80:5000"
+    restart: always
+    volumes:
+      - ./app:/opt/flask-app
+    command: /usr/local/bin/gunicorn -w 2 -b :5000 app:app
+
+volumes:
+  db-data:
+  web-data:

@@ -3,5 +3,6 @@
 env
 venv
 *.sqlite*
+app/config.py
 app/migrations/*
 app/static/tracefiles/*

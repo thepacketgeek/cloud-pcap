@@ -15,25 +15,27 @@ A charmingly pathetic knock-off of cloudshark.org that I use for simple cloud pc
     * [Display Filters](http://wiki.wireshark.org/DisplayFilters)
     * Packet header list
     * Click a packet to see more details 
-* Capture Sanitization
-    * Sanitize pcaps before sharing them
-    * Random or Sequential addresses
-    * Address masking and start address definition
 
 ## Installation/Running
 
+### Pre-requisites
+- Docker/Docker-compose
+
+### Installation Steps
+
 * `$ git clone https://github.com/thepacketgeek/cloud-pcap.git`
-* Install PostgreSQL and create an empty database
-	* Put psql path in config.py DevelopmentConfig() class
-	* `$ export APP_SETTINGS="config.DevelopmentConfig"`
-* `$ cd cloud-pcap`
-* `$ pip install -r requirements.txt`
-* `$ cd app`
-* `$ python app.py shell`
-    * `>>> init_db`
-    * `>>> db.session.commit()`
-   	* Default user admin/cloudpcap is now setup
-* `$ python app.py runserver`
+* `$ cd cloud_pcap`
+* `$ ./init.sh`
+
+App is now running and `admin` user is now setup (password printed to stdout)
+
+
+### Updating/Dev/Debug
+You can stop the docker containers with:
+`$ docker-compose down`
+
+Start them again (without rebuilding) to pickup code changes with:
+`$ docker-compose up`
 
 ## Screenshots
 
@@ -43,16 +45,10 @@ A charmingly pathetic knock-off of cloudshark.org that I use for simple cloud pc
 
 ![screenshot3](docs/cloud-pcap3.png "Screenshot #3")
 
-## Coming Soon
-
-* Group permissions?
-* Heroku-Deployment ready
-* Display Filtering Auto-complete
-* Vagrantfile for quick development environment setup
-
 
 ## Built With...
 
+* [Docker](http://docker.com)
 * [Flask](http://flask.pocoo.org)
 * [Flask-Bootstrap](http://pythonhosted.org/Flask-Bootstrap/)
 * [PyShark](http://kiminewt.github.io/pyshark/)

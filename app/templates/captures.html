@@ -47,9 +47,6 @@ Captures - {{ traceFile.name }}
 						<a href="{{ url_for('download_file', file_id=traceFile.id, attachment_name='%s.%s' % (traceFile.name, traceFile.filetype)) }}">
 							<i class="fa fa-download fa-2x"></i>
 						</a>
-						<a href="#" data-toggle="modal", data-target="#sanitizeModal"> 
-							<i class="fa fa-medkit fa-2x"></i> 
-						</a>
 					</div>
 
 					<div class="col-md-6">
@@ -66,7 +63,6 @@ Captures - {{ traceFile.name }}
 			  
 			  <div class="panel-body splitter">
 		{% if details %}
-
 				<div class="packetList">
 					<table class="table table-condensed table-hover" data-toolbar="#custom-toolbar" data-height="404.5" data-toggle="table" data-show-columns="true">
 					  	<thead>
@@ -112,8 +108,6 @@ Captures - {{ traceFile.name }}
 		  	</div>	
 		</div>
 		
-
-
 			<!-- Packet Stats Modal -->
 			<div class="modal fade" id="packetStatsModal">
 			  <div class="modal-dialog modal-lg">
@@ -163,62 +157,15 @@ Captures - {{ traceFile.name }}
 		  <div class="modal-dialog">
 		    <div class="modal-content">
 		      <div class="modal-header">
-		        <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+		        <button type="button" class="close" data-dismiss="modal">
+				  <span aria-hidden="true">&times;</span>
+				  <span class="sr-only">Close</span>
+				</button>
 		        <h4 class="modal-title">Tags</h4>
 		      </div>
 		      <div class="modal-body">
-		      	
 		      {{ wtf.form_field(tagsForm.tags, class="", **{'data-role':'tagsinput', 'data-provide':'typeahead'}) }}
 		      </div>
-		    </div><!-- /.modal-content -->
-		  </div><!-- /.modal-dialog -->
-		</div><!-- /.modal -->
-
-		<div class="modal fade" id="sanitizeModal">
-		  <div class="modal-dialog">
-		    <div class="modal-content">
-		      <div class="modal-header">
-		        <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
-		        <h4 class="modal-title">Sanitize {{ traceFile.name }}.{{ traceFile.filetype }}</h4>
-		      </div>
-		      <div class="modal-body">
-		        <form class="form" method="post" role="form">
-		          {{ wtf.form_errors(sanitizeForm, hiddens="only") }}
-		          <div class="row">
-		          	<div class="col-md-12">
-			          {{ wtf.form_field(sanitizeForm.sequential) }}
-		          	</div>
-		          </div>
-		          <div class="row">
-		          	<div class="col-md-3">
-			          {{ wtf.form_field(sanitizeForm.ipv4_mask, **{'data-toggle':'tooltip', 'title':'Mask IPv4 address sanitation (Eg. 8 preserves first octet).', 'placeholder': '0-24'}) }}
-		          	</div>
-		          	<div class="col-md-9">
-			          {{ wtf.form_field(sanitizeForm.start_ipv4, **{'data-toggle':'tooltip', 'title':'Start sequential sanitition with this IPv4 address.', 'placeholder': '10.0.0.1'}) }}
-		          	</div>
-		          </div>
-		          <div class="row">
-		          	<div class="col-md-3">
-				          {{ wtf.form_field(sanitizeForm.ipv6_mask, **{'data-toggle':'tooltip', 'title':'Mask IPv6 address sanitation (Eg. 16 preserves first chazwazza).', 'placeholder': '0-64'}) }}
-		          	</div>
-		          	<div class="col-md-9">
-				          {{ wtf.form_field(sanitizeForm.start_ipv6, **{'data-toggle':'tooltip', 'title':'Start sequential sanitation with this IPv6 address.', 'placeholder': '2001:aa::1'}) }}
-		          	</div>
-		          </div>
-		          <div class="row">
-		          	<div class="col-md-3">
-				          {{ wtf.form_field(sanitizeForm.mac_mask, **{'data-toggle':'tooltip', 'title':'Mask MAC address sanitaztion (Eg. 24 preserves manufacturer).', 'placeholder': '0-24'}) }}
-		          	</div>
-		          	<div class="col-md-9">
-			          {{ wtf.form_field(sanitizeForm.start_mac, **{'data-toggle':'tooltip', 'title':'Start sequential sanitation with this MAC address.', 'placeholder': '00:aa:00:00:00:00'}) }}
-		          	</div>
-		          </div>
-		      </div>
-		      <div class="modal-footer">
-		        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-		        <button id="sanitizeSubmit" type="button" class="btn btn-primary">Sanitize</button>
-		      </div>
-		        </form>
 		    </div><!-- /.modal-content -->
 		  </div><!-- /.modal-dialog -->
 		</div><!-- /.modal -->
@@ -255,18 +202,31 @@ Captures - {{ traceFile.name }}
 		    position: '50%'
 		});
 
-		$('input#tags').on('itemAdded itemRemoved', function(event) {
+		$('input#tags-tags').on('itemAdded', function(event) {
 	   		event.preventDefault();
-	   		var data = $('input#tags').val();
+	   		let added_tag = event.item;
+			console.log(added_tag);
 
 	   		$.ajax({
 	   			type : "POST",
-	   			url : "/savetags/{{ traceFile.id }}",
-	   			data : data,
+	   			url : "/add_tag/{{ traceFile.id }}",
+	   			data : added_tag,
 	   			dataType : "json",
 	   			contentType: 'application/json;charset=UTF-8'
 	   		});
+	   	});
+		
+		$('input#tags-tags').on('itemRemoved', function(event) {
+	   		event.preventDefault();
+	   		let removed_tag = event.item;
 
+	   		$.ajax({
+	   			type : "POST",
+	   			url : "/savetags/{{ traceFile.id }}/",
+	   			data : removed_tag,
+	   			dataType : "json",
+	   			contentType: 'application/json;charset=UTF-8'
+	   		});
 	   	});
 
 	   	$('a#editName').on('click', function(event) {
@@ -375,30 +335,6 @@ Captures - {{ traceFile.name }}
 			$(document.body).on('mouseup', function(){
 				$('.fixed-table-container').css('height', $('.top_panel').height()-60);
 		});
-
-		$('#sanitizeSubmit').on('click', function(e) {
-	   		e.preventDefault();
-	   		var data = {'sequential': $('#sanitize-sequential').is(':checked'),
-   				'ipv4_mask': $('#sanitize-ipv4_mask').val(),
-   				'start_ipv4': $('#sanitize-start_ipv4').val(),
-   				'ipv6_mask': $('#sanitize-ipv6_mask').val(),
-   				'start_ipv6': $('#sanitize-start_ipv6').val(),
-   				'mac_mask': $('#sanitize-mac_mask').val(),
-   				'start_mac': $('#sanitize-start_mac').val(),
-   	   			};
-
-	   		$.ajax({
-	   			type : "POST",
-	   			url : "/captures/{{ traceFile.id }}/sanitize",
-	   			data : JSON.stringify(data),
-	   			dataType : "json",
-	   			contentType: 'application/json;charset=UTF-8',
-	   			complete : function(){
-	   				$('#sanitizeModal').modal('hide');
-	   			}
-	   		});
-
-	   	});
 
 	   	window.setTimeout(function() { $(".alert").alert('close'); }, 5000);
 

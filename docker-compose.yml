@@ -1,4 +1,5 @@
 version: "3"
+
 services:
   db:
     image: postgres
@@ -20,13 +21,12 @@ services:
     depends_on:
       - db
     ports:
-      - "5000:5000"
+      - "80:5000"
     restart: always
     volumes:
       - ./app:/opt/flask-app
-    command: flask run --host=0.0.0.0
-    stdin_open: true
-    tty: true
+    command: /usr/local/bin/gunicorn -w 2 -b :5000 app:app
+
 volumes:
   db-data:
   web-data:

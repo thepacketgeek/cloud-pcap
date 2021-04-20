@@ -17,7 +17,7 @@ Mako==1.1.0
 MarkupSafe==1.1.1
 pip==19.2.3
 psycopg2-binary==2.8.3
-py==1.8.0
+py==1.10.0
 pyshark==0.4.2.9
 python-dateutil==2.8.0
 python-editor==1.0.4
